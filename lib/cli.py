@@ -101,9 +101,10 @@ def do_show(options):
     html = lxml.html.fromstring(response.text)
     html.make_links_absolute(base_url=url)
     soapclient = soapbar.Client(session=session, url='https://bugs.debian.org/cgi-bin/soap.cgi', ns='Debbugs/SOAP')
-    result = soapclient.get_status(bugno)
-    subject = result.find('.//{Debbugs/SOAP}subject').text
-    print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=subject, colors=colors))
+    sresult = soapclient.get_status(bugno)
+    def sget(name):
+        return sresult.find('.//{Debbugs/SOAP}' + name).text
+    print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=sget('subject'), colors=colors))
     version_graph = extract_bug_version_graph(session, html)
     if version_graph is not None:
         print('Versions:')
