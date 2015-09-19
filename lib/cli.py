@@ -112,6 +112,9 @@ def do_show(options):
     def sget_list(name):
         xp = './/d:' + name + '/d:item/text()'
         return bug_status.xpath(xp, namespaces=dict(d='Debbugs/SOAP'))
+    def sget_int_list(name):
+        s = bug_status.find('.//{Debbugs/SOAP}' + name).text or ''
+        return [int(x) for x in s.split()]
     print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=sget('subject'), colors=colors))
     package = sget('package')
     if package.startswith('src:'):
@@ -141,6 +144,11 @@ def do_show(options):
     tags = sget('tags')
     if tags:
         print('Tags: {tags}'.format(tags=tags))
+    merged_with = sget_int_list('mergedwith')
+    if merged_with:
+        print('Merged-with:')
+        for mbug in merged_with:
+            print('  https://bugs.debian.org/{N}'.format(N=mbug))
     found_versions = sget_list('found_versions')
     if found_versions:
         print('Found:')
