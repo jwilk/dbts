@@ -126,7 +126,11 @@ def do_show(options):
     owner = sget('owner')
     if owner:
         print('Owner: {user}'.format(user=owner))
-    print('Submitter: {user}'.format(user=sget('originator')))
+    submitter = sget('originator')
+    if package == 'wnpp' and owner == submitter:
+        pass
+    else:
+        print('Submitter: {user}'.format(user=submitter))
     date = int(sget('date'))
     date = datetime.datetime.utcfromtimestamp(date)
     print('Date: {date} UTC'.format(date=date))
