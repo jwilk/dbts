@@ -61,7 +61,7 @@ def main():
     options.session = session
     globals()['do_' + options.cmd](options)
 
-def render_version_graph(dot_data):
+def render_version_graph(graph):
     vcolors = dict(
         salmon=(colors.red, colors.off),
         chartreuse=(colors.green, colors.off),
@@ -74,8 +74,17 @@ def render_version_graph(dot_data):
         def repl(match):
             return color[0] + match.group(1) + color[1]
         return re.sub(r'\A(.*)$', repl, label, flags=re.MULTILINE)
-    graph = dotparser.parse(dot_data)
     graph.pprint(render=render)
+
+def extract_bug_version_graph(session, html):
+    version_urls = html.xpath('//div[@class="versiongraph"]/a/@href')
+    if not version_urls:
+        return
+    [version_url] = version_urls
+    version_url += ';dot=1'
+    response = session.get(version_url)
+    response.raise_for_status()
+    return dotparser.parse(response.text)
 
 def extract_bug_subject(html):
     [title] = html.xpath('//title/text()')
@@ -93,11 +102,9 @@ def do_show(options):
     html.make_links_absolute(base_url=url)
     subject = extract_bug_subject(html)
     print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=subject, colors=colors))
-    [version_url] = html.xpath('//div[@class="versiongraph"]/a/@href')
-    version_url += ';dot=1'
-    response = session.get(version_url)
-    response.raise_for_status()
-    print('Versions:')
-    render_version_graph(response.text)
+    version_graph = extract_bug_version_graph(session, html)
+    if version_graph is not None:
+        print('Versions:')
+        render_version_graph(version_graph)
 
 # vim:ts=4 sts=4 sw=4 et
