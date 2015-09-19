@@ -65,11 +65,14 @@ rc_severities = {
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('show')
-    ap.add_argument('bug', metavar='BUGNO')
+    ap.add_argument('bugs', metavar='BUGNO', type=int, nargs='+')
     return ap
 
 def run(options):
-    bugno = int(options.bug)
+    for bugno in options.bugs:
+        run_one(bugno, options=options)
+
+def run_one(bugno, *, options):
     print('Location: {colors.blue}{colors.bold}https://bugs.debian.org/{N}{colors.off}'.format(N=bugno, colors=colors))
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
@@ -138,6 +141,7 @@ def run(options):
         print('Archived: yes')
     if status.forwarded:
         print('Forwarded: {url}'.format(url=status.forwarded))
+    print()
 
 __all__ = [
     'add_argument_parser',
