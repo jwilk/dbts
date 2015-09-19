@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import argparse
+import datetime
 import os
 import re
 
@@ -115,6 +116,9 @@ def do_show(options):
         if source is not None:
             print('Source: {pkg}'.format(pkg=source, colors=colors))
     print('Reported-By: {user}'.format(user=sget('originator')))
+    date = int(sget('date'))
+    date = datetime.datetime.utcfromtimestamp(date)
+    print('Date: {date} UTC'.format(date=date))
     version_graph = extract_bug_version_graph(session, html)
     if version_graph is not None:
         print('Versions:')
