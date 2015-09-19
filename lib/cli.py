@@ -175,6 +175,8 @@ def do_show(options):
             print('  https://bugs.debian.org/{N}'.format(N=bbug))
     if done:
         print('Done: {user}'.format(user=done))
+    if sget('archived'):
+        print('Archived: yes')
     forwarded = sget('forwarded')
     if forwarded:
         print('Forwarded: {url}'.format(url=forwarded))
