@@ -105,6 +105,15 @@ def do_show(options):
     def sget(name):
         return sresult.find('.//{Debbugs/SOAP}' + name).text
     print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=sget('subject'), colors=colors))
+    package = sget('package')
+    if package.startswith('src:'):
+        source = package[4:]
+        print('Source: {colors.bold}{pkg}{colors.off}'.format(pkg=source, colors=colors))
+    else:
+        print('Package: {colors.bold}{pkg}{colors.off}'.format(pkg=package, colors=colors))
+        source = sget('source')
+        if source is not None:
+            print('Source: {pkg}'.format(pkg=source, colors=colors))
     version_graph = extract_bug_version_graph(session, html)
     if version_graph is not None:
         print('Versions:')
