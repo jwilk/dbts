@@ -31,6 +31,7 @@ import requests
 
 from lib import colors
 from lib import dotparser
+from lib import indent
 from lib import soapbar
 
 if int(requests.__version__.split('.')[0]) < 1:
@@ -67,7 +68,7 @@ def main():
     options.session = session
     globals()['do_' + options.cmd](options)
 
-def render_version_graph(graph):
+def print_version_graph(graph, *, ilevel=0):
     vcolors = dict(
         salmon=(colors.red, colors.off),
         chartreuse=(colors.green, colors.off),
@@ -80,7 +81,8 @@ def render_version_graph(graph):
         def repl(match):
             return color[0] + match.group(1) + color[1]
         return re.sub(r'\A(.*)$', repl, label, flags=re.MULTILINE)
-    graph.pprint(render=render)
+    s = graph.pformat(render=render)
+    print(indent.indent(s, ilevel))
 
 def extract_bug_version_graph(session, html):
     version_urls = html.xpath('//div[@class="versiongraph"]/a/@href')
@@ -141,6 +143,6 @@ def do_show(options):
             print('  {ver}'.format(ver=version))
     if version_graph:
         print('Version-Graph:')
-        render_version_graph(version_graph)
+        print_version_graph(version_graph, ilevel=2)
 
 # vim:ts=4 sts=4 sw=4 et

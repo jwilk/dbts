@@ -23,7 +23,9 @@ very crude dot parser
 '''
 
 import collections
+import io
 import re
+import sys
 
 from lib import indent
 
@@ -56,23 +58,33 @@ class Graph(object):
         for src, dst in edges:
             self.edges[src].add(dst)
 
-    def pprint(self, render=str):
+    def pprint(self, *, file=sys.stdout, render=str):
         roots = set(self.nodes.keys())
         for dsts in self.edges.values():
             roots -= dsts
         seen = set()
-        def p(node_name, level):
+        def p(node_name, ilevel):
             if node_name in seen:
                 return
             node = self.nodes[node_name]
             label = render(node)
-            label = indent.indent(label, level * 2, bullet='∙ ')
-            print(label)
+            bullet = '∙ ' if ilevel > 0 else ''
+            label = indent.indent(
+                label,
+                max(0, (ilevel - 1) * 2),
+                bullet=bullet
+            )
+            print(label, file=file)
             seen.add(node_name)
             for child in sorted(self.edges[node_name]):
-                p(child, level + 1)
+                p(child, ilevel + 1)
         for root in sorted(roots):
             p(root, 0)
+
+    def pformat(self, *, render=str):
+        fp = io.StringIO()
+        self.pprint(file=fp, render=render)
+        return fp.getvalue()
 
     def __bool__(self):
         return len(self.edges) > 0
