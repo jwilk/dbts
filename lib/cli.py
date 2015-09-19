@@ -98,7 +98,7 @@ def extract_bug_version_graph(session, html):
 
 def do_show(options):
     bugno = int(options.bug)
-    print('Location: {colors.blue}{colors.bold}http://bugs.debian.org/{N}{colors.off}'.format(N=bugno, colors=colors))
+    print('Location: {colors.blue}{colors.bold}https://bugs.debian.org/{N}{colors.off}'.format(N=bugno, colors=colors))
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
     response = session.get(url)
