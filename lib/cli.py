@@ -154,5 +154,8 @@ def do_show(options):
     if version_graph:
         print('Version-Graph:')
         print_version_graph(version_graph, ilevel=2)
+    done = sget('done')
+    if done:
+        print('Done: {user}'.format(user=done))
 
 # vim:ts=4 sts=4 sw=4 et
