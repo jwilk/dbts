@@ -123,6 +123,9 @@ def do_show(options):
     severity_color = (colors.bold + colors.red) if severity in {'serious', 'grave', 'critical'} else colors.off
     print('Severity: {color}{severity}{colors.off}'.format(severity=severity, color=severity_color, colors=colors))
     version_graph = extract_bug_version_graph(session, html)
+    tags = sget('tags')
+    if tags:
+        print('Tags: {tags}'.format(tags=tags))
     if version_graph is not None:
         print('Versions:')
         render_version_graph(version_graph)
