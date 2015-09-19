@@ -26,7 +26,7 @@ very crude SOAP client
 
 import lxml.etree
 
-_template = '''
+_template = '''\
 <soap:Envelope
   soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
   xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
