@@ -77,6 +77,12 @@ def render_version_graph(dot_data):
     graph = dotparser.parse(dot_data)
     graph.pprint(render=render)
 
+def extract_bug_subject(html):
+    [title] = html.xpath('//title/text()')
+    title = re.sub('^#[0-9]+ - ', '', title)
+    title = re.sub(' - Debian Bug report logs$', '', title)
+    return title
+
 def do_show(options):
     print('Bug: {colors.blue}{colors.bold}http://bugs.debian.org/{N}{colors.off}'.format(N=options.bug, colors=colors))
     session = options.session
@@ -85,6 +91,8 @@ def do_show(options):
     response.raise_for_status()
     html = lxml.html.fromstring(response.text)
     html.make_links_absolute(base_url=url)
+    subject = extract_bug_subject(html)
+    print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=subject, colors=colors))
     [version_url] = html.xpath('//div[@class="versiongraph"]/a/@href')
     version_url += ';dot=1'
     response = session.get(version_url)
