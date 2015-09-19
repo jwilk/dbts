@@ -120,6 +120,10 @@ def do_show(options):
         source = sget('source')
         if source is not None:
             print('Source: {pkg}'.format(pkg=source, colors=colors))
+    # TODO: Maintainer
+    owner = sget('owner')
+    if owner:
+        print('Owner: {user}'.format(user=owner))
     print('Reported-By: {user}'.format(user=sget('originator')))
     date = int(sget('date'))
     date = datetime.datetime.utcfromtimestamp(date)
