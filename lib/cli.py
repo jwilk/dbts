@@ -82,7 +82,9 @@ def print_version_graph(graph, *, ilevel=0):
             return color[0] + match.group(1) + color[1]
         return re.sub(r'\A(.*)$', repl, label, flags=re.MULTILINE)
     s = graph.pformat(render=render)
-    print(indent.indent(s, ilevel))
+    s = s.rstrip('\n')
+    s = indent.indent(s, ilevel)
+    print(s)
 
 def extract_bug_version_graph(session, html):
     version_urls = html.xpath('//div[@class="versiongraph"]/a/@href')
