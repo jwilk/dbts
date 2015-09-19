@@ -114,6 +114,7 @@ def do_show(options):
         source = sget('source')
         if source is not None:
             print('Source: {pkg}'.format(pkg=source, colors=colors))
+    print('Reported-By: {user}'.format(user=sget('originator')))
     version_graph = extract_bug_version_graph(session, html)
     if version_graph is not None:
         print('Versions:')
