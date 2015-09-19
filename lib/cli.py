@@ -30,6 +30,7 @@ import requests
 
 from lib import colors
 from lib import dotparser
+from lib import soapbar
 
 if int(requests.__version__.split('.')[0]) < 1:
     raise RuntimeError('requests >= 1.0 is required')
@@ -43,7 +44,11 @@ def setup_cache():
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir, 0o700)
     cache_name = '{dir}/cache'.format(dir=cache_dir)
-    requests_cache.install_cache(cache_name=cache_name, backend='sqlite')
+    requests_cache.install_cache(
+        cache_name=cache_name,
+        backend='sqlite',
+        allowable_methods=('GET', 'POST'),
+    )
 
 def main():
     ap = argparse.ArgumentParser()
@@ -86,21 +91,18 @@ def extract_bug_version_graph(session, html):
     response.raise_for_status()
     return dotparser.parse(response.text)
 
-def extract_bug_subject(html):
-    [title] = html.xpath('//title/text()')
-    title = re.sub('^#[0-9]+ - ', '', title)
-    title = re.sub(' - Debian Bug report logs$', '', title)
-    return title
-
 def do_show(options):
-    print('Bug: {colors.blue}{colors.bold}http://bugs.debian.org/{N}{colors.off}'.format(N=options.bug, colors=colors))
+    bugno = int(options.bug)
+    print('Bug: {colors.blue}{colors.bold}http://bugs.debian.org/{N}{colors.off}'.format(N=bugno, colors=colors))
     session = options.session
-    url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(options.bug)
+    url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
     response = session.get(url)
     response.raise_for_status()
     html = lxml.html.fromstring(response.text)
     html.make_links_absolute(base_url=url)
-    subject = extract_bug_subject(html)
+    soapclient = soapbar.Client(session=session, url='https://bugs.debian.org/cgi-bin/soap.cgi', ns='Debbugs/SOAP')
+    result = soapclient.get_status(bugno)
+    subject = result.find('.//{Debbugs/SOAP}subject').text
     print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=subject, colors=colors))
     version_graph = extract_bug_version_graph(session, html)
     if version_graph is not None:
