@@ -140,7 +140,7 @@ def do_show(options):
         for version in fixed_versions:
             print('  {ver}'.format(ver=version))
     if version_graph:
-        print('Versions:')
+        print('Version-Graph:')
         render_version_graph(version_graph)
 
 # vim:ts=4 sts=4 sw=4 et
