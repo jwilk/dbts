@@ -163,6 +163,16 @@ def do_show(options):
         print('Version-Graph:')
         print_version_graph(version_graph, ilevel=2)
     done = sget('done')
+    blocked_by = sget_int_list('blockedby')
+    if blocked_by:
+        print('Blocked-by:')
+        for bbug in blocked_by:
+            print('  https://bugs.debian.org/{N}'.format(N=bbug))
+    blocks = sget_int_list('blocks')
+    if blocks:
+        print('Blocks:')
+        for bbug in blocks:
+            print('  https://bugs.debian.org/{N}'.format(N=bbug))
     if done:
         print('Done: {user}'.format(user=done))
 
