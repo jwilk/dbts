@@ -175,5 +175,8 @@ def do_show(options):
             print('  https://bugs.debian.org/{N}'.format(N=bbug))
     if done:
         print('Done: {user}'.format(user=done))
+    forwarded = sget('forwarded')
+    if forwarded:
+        print('Forwarded: {url}'.format(url=forwarded))
 
 # vim:ts=4 sts=4 sw=4 et
