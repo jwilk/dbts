@@ -63,6 +63,11 @@ rc_severities = {
     'critical',
 }
 
+def add_argument_parser(subparsers):
+    ap = subparsers.add_parser('show')
+    ap.add_argument('bug', metavar='BUGNO')
+    return ap
+
 def run(options):
     bugno = int(options.bug)
     print('Location: {colors.blue}{colors.bold}https://bugs.debian.org/{N}{colors.off}'.format(N=bugno, colors=colors))
@@ -134,6 +139,9 @@ def run(options):
     if status.forwarded:
         print('Forwarded: {url}'.format(url=status.forwarded))
 
-__all__ = ['run']
+__all__ = [
+    'add_argument_parser',
+    'run'
+]
 
 # vim:ts=4 sts=4 sw=4 et

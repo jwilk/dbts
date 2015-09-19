@@ -50,8 +50,9 @@ def main():
     sp = ap.add_subparsers()
     sp.dest = 'cmd'  # https://bugs.python.org/issue9253
     sp.required = True
-    cmd_show = sp.add_parser('show')
-    cmd_show.add_argument('bug', metavar='BUGNO')
+    for cmd in ['show']:
+        mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=cmd))
+        mod.add_argument_parser(sp)
     options = ap.parse_args()
     setup_cache()
     session = requests.Session()
