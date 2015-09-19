@@ -105,6 +105,9 @@ def do_show(options):
     bug_status = soapclient.get_status(bugno)
     def sget(name):
         return bug_status.find('.//{Debbugs/SOAP}' + name).text
+    def sget_list(name):
+        xp = './/d:' + name + '/d:item/text()'
+        return bug_status.xpath(xp, namespaces=dict(d='Debbugs/SOAP'))
     print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=sget('subject'), colors=colors))
     package = sget('package')
     if package.startswith('src:'):
@@ -126,6 +129,16 @@ def do_show(options):
     tags = sget('tags')
     if tags:
         print('Tags: {tags}'.format(tags=tags))
+    found_versions = sget_list('found_versions')
+    if found_versions:
+        print('Found:')
+        for version in found_versions:
+            print('  {ver}'.format(ver=version))
+    fixed_versions = sget_list('fixed_versions')
+    if fixed_versions:
+        print('Fixed:')
+        for version in fixed_versions:
+            print('  {ver}'.format(ver=version))
     if version_graph:
         print('Versions:')
         render_version_graph(version_graph)
