@@ -22,6 +22,7 @@
 Debian BTS SOAP client
 '''
 
+import base64
 import datetime
 
 from lib import soapbar
@@ -101,7 +102,11 @@ class BugStatus(object):
         return self._get('forwarded')
 
     def _get(self, name):
-        return self._xml.find('.//{Debbugs/SOAP}' + name).text
+        elem = self._xml.find('.//{Debbugs/SOAP}' + name)
+        if elem.get('{http://www.w3.org/1999/XMLSchema-instance}type') == 'xsd:base64Binary':
+            return base64.b64decode(elem.text).decode('UTF-8', 'replace')
+        else:
+            return elem.text
 
     def _get_list(self, name):
         xp = './/d:' + name + '/d:item/text()'
