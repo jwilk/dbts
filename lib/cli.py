@@ -125,6 +125,11 @@ def do_show(options):
         source = sget('source')
         if source is not None:
             print('Source: {pkg}'.format(pkg=source, colors=colors))
+    affects = (sget('affects') or '').split()
+    if affects:
+        print('Affects:')
+        for apkg in affects:
+            print('  {pkg}'.format(pkg=apkg))
     # TODO: Maintainer
     owner = sget('owner')
     if owner:
