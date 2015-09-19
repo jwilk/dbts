@@ -126,7 +126,7 @@ def do_show(options):
     tags = sget('tags')
     if tags:
         print('Tags: {tags}'.format(tags=tags))
-    if version_graph is not None:
+    if version_graph:
         print('Versions:')
         render_version_graph(version_graph)
 

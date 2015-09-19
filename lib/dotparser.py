@@ -74,6 +74,9 @@ class Graph(object):
         for root in sorted(roots):
             p(root, 0)
 
+    def __bool__(self):
+        return len(self.edges) > 0
+
     def __repr__(self):
         return '{tp}({nodes!r}, {edges!r})'.format(
             tp=type(self).__name__,
