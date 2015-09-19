@@ -119,6 +119,9 @@ def do_show(options):
     date = int(sget('date'))
     date = datetime.datetime.utcfromtimestamp(date)
     print('Date: {date} UTC'.format(date=date))
+    severity = sget('severity')
+    severity_color = (colors.bold + colors.red) if severity in {'serious', 'grave', 'critical'} else colors.off
+    print('Severity: {color}{severity}{colors.off}'.format(severity=severity, color=severity_color, colors=colors))
     version_graph = extract_bug_version_graph(session, html)
     if version_graph is not None:
         print('Versions:')
