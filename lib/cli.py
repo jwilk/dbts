@@ -124,7 +124,7 @@ def do_show(options):
     owner = sget('owner')
     if owner:
         print('Owner: {user}'.format(user=owner))
-    print('Reported-By: {user}'.format(user=sget('originator')))
+    print('Submitter: {user}'.format(user=sget('originator')))
     date = int(sget('date'))
     date = datetime.datetime.utcfromtimestamp(date)
     print('Date: {date} UTC'.format(date=date))
