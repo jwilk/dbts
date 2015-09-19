@@ -101,9 +101,9 @@ def do_show(options):
     html = lxml.html.fromstring(response.text)
     html.make_links_absolute(base_url=url)
     soapclient = soapbar.Client(session=session, url='https://bugs.debian.org/cgi-bin/soap.cgi', ns='Debbugs/SOAP')
-    sresult = soapclient.get_status(bugno)
+    bug_status = soapclient.get_status(bugno)
     def sget(name):
-        return sresult.find('.//{Debbugs/SOAP}' + name).text
+        return bug_status.find('.//{Debbugs/SOAP}' + name).text
     print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=sget('subject'), colors=colors))
     package = sget('package')
     if package.startswith('src:'):
