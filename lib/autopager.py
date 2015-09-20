@@ -41,8 +41,10 @@ def autopager():
                 encoding=orig_stdout.encoding,
                 errors='backslashreplace',
             )
-            yield
-            sys.stdout.close()
+            try:
+                yield
+            finally:
+                sys.stdout.close()
         finally:
             pager.wait()
     finally:
