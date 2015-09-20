@@ -22,6 +22,7 @@
 color terminal support
 '''
 
+import builtins
 import codecs
 import os
 import re
@@ -42,8 +43,8 @@ class _seq:
     reverse = '\x1b[7m'
     unreverse = '\x1b[27m'
 
-def tprint(_s='', **kwargs):
-    print(tformat(_s, **kwargs))
+def print(_s='', **kwargs):
+    builtins.print(format(_s, **kwargs))
 
 def _quote_unsafe(s):
     return ''.join(
@@ -72,7 +73,7 @@ def _quote(s):
                 yield s.encode(encoding, '_dbts_colorterm').decode(encoding)
     return ''.join(esc())
 
-def tformat(_s, **kwargs):
+def format(_s, **kwargs):
     kwargs.update(t=_seq)
     return _s.format(**{
         key: _quote(value)
@@ -86,12 +87,12 @@ def print_hr():
     except UnicodeError:
         ch = '-'
     s = ch * _terminal_width
-    tprint('{t.black}{t.bold}{s}{t.off}', s=s)
+    print('{t.black}{t.bold}{s}{t.off}', s=s)
 
 __all__ = [
+    'format',
+    'print',
     'print_hr',
-    'tformat',
-    'tprint',
 ]
 
 # vim:ts=4 sts=4 sw=4 et

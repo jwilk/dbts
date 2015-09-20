@@ -46,7 +46,7 @@ def print_version_graph(graph, *, ilevel=0):
         if color is not None:
             fmt1 = color + fmt1 + '{t.off}'
         label = '\n'.join(
-            colorterm.tformat(fmt1 if i == 0 else fmt2, line=line)
+            colorterm.format(fmt1 if i == 0 else fmt2, line=line)
             for i, line in enumerate(label.splitlines())
         )
         return label
@@ -106,7 +106,7 @@ def run(options):
         run_one(bugno, options=options)
 
 def run_one(bugno, *, options):
-    tprint = colorterm.tprint
+    tprint = colorterm.print
     tprint('Location: {t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
