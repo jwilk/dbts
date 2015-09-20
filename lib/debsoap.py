@@ -24,8 +24,16 @@ Debian BTS SOAP client
 
 import base64
 import datetime
+import email
 
 import lxml.etree
+
+def _get_text(elem):
+    tp = elem.get('{http://www.w3.org/1999/XMLSchema-instance}type')
+    if tp == 'xsd:base64Binary':
+        return base64.b64decode(elem.text).decode('UTF-8', 'replace')
+    else:
+        return elem.text
 
 class BugStatus(object):
 
@@ -103,10 +111,7 @@ class BugStatus(object):
 
     def _get(self, name):
         elem = self._xml.find('.//{Debbugs/SOAP}' + name)
-        if elem.get('{http://www.w3.org/1999/XMLSchema-instance}type') == 'xsd:base64Binary':
-            return base64.b64decode(elem.text).decode('UTF-8', 'replace')
-        else:
-            return elem.text
+        return _get_text(elem)
 
     def _get_list(self, name):
         xp = './/d:' + name + '/d:item/text()'
@@ -115,6 +120,37 @@ class BugStatus(object):
     def _get_int_list(self, name):
         s = self._xml.find('.//{Debbugs/SOAP}' + name).text or ''
         return [int(x) for x in s.split()]
+
+class BugLog(object):
+
+    def __init__(self, xml):
+        self._xml = xml
+
+    def __iter__(self):
+        for elem in self._xml:
+            yield BugMessage(elem)
+
+class BugMessage(object):
+
+    def __init__(self, xml):
+        self._xml = xml
+
+    def _get(self, name):
+        elem = self._xml.find('./{Debbugs/SOAP}' + name)
+        return _get_text(elem)
+
+    @property
+    def header(self):
+        s = self._get('header')
+        return email.message_from_string(s)
+
+    @property
+    def body(self):
+        return self._get('body')
+
+    @property
+    def id(self):
+        return int(self._get('msg_num'))
 
 _query_template = '''\
 <soap:Envelope
@@ -164,7 +200,13 @@ class Client(object):
         xml = self._call('get_status', n)
         return BugStatus(xml)
 
+    def get_log(self, n):
+        [xml] = self._call('get_bug_log', n)
+        return BugLog(xml)
+
 __all__ = [
+    'BugLog',
+    'BugMessage',
     'BugStatus',
     'Client',
 ]

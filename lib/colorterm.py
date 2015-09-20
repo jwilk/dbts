@@ -27,6 +27,7 @@ import re
 import sys
 
 class _seq:
+    black = '\x1b[30m'
     red = '\x1b[31m'
     green = '\x1b[32m'
     blue = '\x1b[34m'
@@ -35,8 +36,8 @@ class _seq:
     reverse = '\x1b[7m'
     unreverse = '\x1b[27m'
 
-def tprint(s='', **kwargs):
-    print(tformat(s, **kwargs))
+def tprint(_s='', **kwargs):
+    print(tformat(_s, **kwargs))
 
 def _quote_unsafe(s):
     return ''.join(
@@ -65,12 +66,21 @@ def _quote(s):
                 yield s.encode(encoding, '_dbts_colorterm').decode(encoding)
     return ''.join(esc())
 
-def tformat(s, **kwargs):
+def tformat(_s, **kwargs):
     kwargs.update(t=_seq)
-    return s.format(**{
+    return _s.format(**{
         key: _quote(value)
         for key, value in kwargs.items()
     })
+
+def print_hr():
+    ch = '─'
+    try:
+        ch.encode(sys.stdout.encoding)
+    except UnicodeError:
+        ch = '-'
+    s = ch * 80
+    tprint('{t.black}{t.bold}{s}{t.off}', s=s)
 
 __all__ = [
     'tformat',

@@ -20,6 +20,9 @@
 
 'the “show” command'
 
+import datetime
+import email.header
+import email.utils
 import sys
 
 import lxml.html
@@ -66,6 +69,26 @@ def extract_bug_version_graph(html, *, options):
     response = options.session.get(version_url)
     response.raise_for_status()
     return dotparser.parse(response.text)
+
+def decode_header(s):
+    return str(
+        email.header.make_header(
+            email.header.decode_header(s)
+        )
+    )
+
+def decode_date(s):
+    timetuple = email.utils.parsedate_tz(s)
+    tz_offset = timetuple[-1]
+    dt = datetime.datetime(*timetuple[:6])
+    dt = str(dt)
+    if tz_offset is not None:
+        tz_sign = '+-'[tz_offset < 0]
+        tz_offset = abs(tz_offset) // 60
+        tz_hour = tz_offset // 60
+        tz_min = tz_offset % 60
+        dt += '{sign}{hh:02}:{mm:02}'.format(sign=tz_sign, hh=tz_hour, mm=tz_min)
+    return str(dt)
 
 rc_severities = {
     'serious',
@@ -151,6 +174,24 @@ def run_one(bugno, *, options):
         tprint('Archived: yes')
     if status.forwarded:
         tprint('Forwarded: {url}', url=status.forwarded)
+    colorterm.print_hr()
+    bug_log = debsoap_client.get_log(bugno)
+    for message in bug_log:
+        tprint('Location: https://bugs.debian.org/{N}#{id}', N=bugno, id=message.id)
+        headers = message.header
+        for hname in ['From', 'To', 'Cc', 'Subject']:
+            value = headers[hname]
+            if value is None:
+                continue
+            value = decode_header(value)
+            tprint('{h}: {v}', h=hname, v=value)
+        date = headers['Date']
+        if date is not None:
+            tprint('Date: {date}', date=decode_date(date))
+        tprint()
+        for line in message.body.splitlines():
+            tprint('{l}', l=line)
+        colorterm.print_hr()
     tprint()
 
 __all__ = [
