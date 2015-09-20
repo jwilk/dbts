@@ -20,6 +20,8 @@
 
 'the “show” command'
 
+import sys
+
 import lxml.html
 
 from lib import colorterm
@@ -45,7 +47,12 @@ def print_version_graph(graph, *, ilevel=0):
             for i, line in enumerate(label.splitlines())
         )
         return label
-    s = graph.pformat(render=render)
+    bullet = '∙'
+    try:
+        bullet.encode(sys.stdout.encoding)
+    except UnicodeError:
+        bullet = '*'
+    s = graph.pformat(render=render, bullet=bullet)
     s = s.rstrip('\n')
     s = indent.indent(s, ilevel)
     print(s)
