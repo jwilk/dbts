@@ -164,6 +164,9 @@ class Client(object):
         xml = self._call('get_status', n)
         return BugStatus(xml)
 
-__all__ = ['BugStatus', 'Client']
+__all__ = [
+    'BugStatus',
+    'Client',
+]
 
 # vim:ts=4 sts=4 sw=4 et
