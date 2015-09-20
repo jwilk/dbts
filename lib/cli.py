@@ -30,11 +30,8 @@ import requests
 if int(requests.__version__.split('.')[0]) < 1:
     raise RuntimeError('requests >= 1.0 is required')
 
-def setup_cache():
-    try:
-        import requests_cache
-    except ImportError:
-        return
+def install_cache():
+    import requests_cache
     cache_dir = appdirs.user_cache_dir('dbts')
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir, 0o700)
@@ -47,6 +44,7 @@ def setup_cache():
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument('--force-cache', action='store_true', help=argparse.SUPPRESS)
     sp = ap.add_subparsers()
     sp.dest = 'cmd'  # https://bugs.python.org/issue9253
     sp.required = True
@@ -54,7 +52,8 @@ def main():
         mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=cmd))
         mod.add_argument_parser(sp)
     options = ap.parse_args()
-    setup_cache()
+    if options.force_cache:
+        install_cache()
     session = requests.Session()
     session.verify = True
     session.trust_env = False
