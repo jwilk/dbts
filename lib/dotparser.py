@@ -117,4 +117,10 @@ def parse(dot_data):
         edges.add((name2, name1))
     return Graph(nodes, edges)
 
+__all__ = [
+    'Graph',
+    'Node',
+    'parse',
+]
+
 # vim:ts=4 sts=4 sw=4 et
