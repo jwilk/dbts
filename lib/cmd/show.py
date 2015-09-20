@@ -20,28 +20,31 @@
 
 'the “show” command'
 
-import re
-
 import lxml.html
 
-from lib import colors
+from lib import colorterm
 from lib import dotparser
 from lib import indent
 from lib import debsoap
 
 def print_version_graph(graph, *, ilevel=0):
     vcolors = dict(
-        salmon=(colors.red, colors.off),
-        chartreuse=(colors.green, colors.off),
+        salmon='{t.red}',
+        chartreuse='{t.green}',
     )
     def render(node):
-        color = vcolors.get(node.get('fillcolor'), ('', ''))
         label = str(node)
         if label == 'some versions':
             label = '...'
-        def repl(match):
-            return color[0] + match.group(1) + color[1]
-        return re.sub(r'\A(.*)$', repl, label, flags=re.MULTILINE)
+        color = vcolors.get(node.get('fillcolor'))
+        fmt1 = fmt2 = '{line}'
+        if color is not None:
+            fmt1 = color + fmt1 + '{t.off}'
+        label = '\n'.join(
+            colorterm.tformat(fmt1 if i == 0 else fmt2, line=line)
+            for i, line in enumerate(label.splitlines())
+        )
+        return label
     s = graph.pformat(render=render)
     s = s.rstrip('\n')
     s = indent.indent(s, ilevel)
@@ -72,8 +75,10 @@ def run(options):
     for bugno in options.bugs:
         run_one(bugno, options=options)
 
+
 def run_one(bugno, *, options):
-    print('Location: {colors.blue}{colors.bold}https://bugs.debian.org/{N}{colors.off}'.format(N=bugno, colors=colors))
+    tprint = colorterm.tprint
+    tprint('Location: {t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
     response = session.get(url)
@@ -82,66 +87,65 @@ def run_one(bugno, *, options):
     html.make_links_absolute(base_url=url)
     debsoap_client = debsoap.Client(session=session)
     status = debsoap_client.get_status(bugno)
-    print('Subject: {colors.bold}{subject}{colors.off}'.format(subject=status.subject, colors=colors))
+    tprint('Subject: {t.bold}{subject}{t.off}', subject=status.subject)
     if status.package.startswith('src:'):
-        print('Source: {colors.bold}{pkg}{colors.off}'.format(pkg=status.package[4:], colors=colors))
+        tprint('Source: {t.bold}{pkg}{t.off}', pkg=status.package[4:])
     else:
-        print('Package: {colors.bold}{pkg}{colors.off}'.format(pkg=status.package, colors=colors))
+        tprint('Package: {t.bold}{pkg}{t.off}', pkg=status.package)
         if status.source is not None:
-            print('Source: {pkg}'.format(pkg=status.source, colors=colors))
+            tprint('Source: {pkg}', pkg=status.source)
     if status.affects:
-        print('Affects:')
+        tprint('Affects:')
         for apkg in status.affects:
-            print('  {pkg}'.format(pkg=apkg))
+            tprint('  {pkg}', pkg=apkg)
     # TODO: Maintainer
     if status.owner:
-        print('Owner: {user}'.format(user=status.owner))
+        tprint('Owner: {user}', user=status.owner)
     if status.package == 'wnpp' and status.owner == status.submitter:
         pass
     else:
-        print('Submitter: {user}'.format(user=status.submitter))
-    print('Date: {date} UTC'.format(date=status.date))
+        tprint('Submitter: {user}', user=status.submitter)
+    tprint('Date: {date} UTC', date=status.date)
     severity_color = (
-        (colors.bold + colors.red) if status.severity in rc_severities
-        else colors.off
+        '{t.bold}{t.red}' if status.severity in rc_severities
+        else ''
     )
-    print('Severity: {color}{severity}{colors.off}'.format(
+    tprint('Severity: ' + severity_color + '{severity}{t.off}',
         severity=status.severity,
-        color=severity_color, colors=colors)
     )
     version_graph = extract_bug_version_graph(html, options=options)
     if status.tags:
-        print('Tags: {tags}'.format(tags=' '.join(status.tags)))
+        tprint('Tags: {tags}', tags=' '.join(status.tags))
     if status.merged_with:
-        print('Merged-with:')
+        tprint('Merged-with:')
         for mbug in status.merged_with:
-            print('  https://bugs.debian.org/{N}'.format(N=mbug))
+            tprint('  https://bugs.debian.org/{N}', N=mbug)
     if status.found_versions:
-        print('Found:')
+        tprint('Found:')
         for version in status.found_versions:
-            print('  {ver}'.format(ver=version))
+            tprint('  {ver}', ver=version)
     if status.fixed_versions:
-        print('Fixed:')
+        tprint('Fixed:')
         for version in status.fixed_versions:
-            print('  {ver}'.format(ver=version))
+            tprint('  {ver}', ver=version)
     if version_graph:
-        print('Version-Graph:')
+        tprint('Version-Graph:')
         print_version_graph(version_graph, ilevel=2)
     if status.blocked_by:
-        print('Blocked-by:')
+        tprint('Blocked-by:')
         for bbug in status.blocked_by:
-            print('  https://bugs.debian.org/{N}'.format(N=bbug))
+            tprint('  https://bugs.debian.org/{N}', N=bbug)
     if status.blocks:
-        print('Blocks:')
+        tprint('Blocks:')
         for bbug in status.blocks:
-            print('  https://bugs.debian.org/{N}'.format(N=bbug))
+            tprint('  https://bugs.debian.org/{N}', N=bbug)
     if status.done:
-        print('Done: {user}'.format(user=status.done))
+        tprint('Done: {user}', user=status.done)
     if status.archived:
-        print('Archived: yes')
+        tprint('Archived: yes')
     if status.forwarded:
-        print('Forwarded: {url}'.format(url=status.forwarded))
-    print()
+        tprint('Forwarded: {url}', url=status.forwarded)
+    tprint()
 
 __all__ = [
     'add_argument_parser',
