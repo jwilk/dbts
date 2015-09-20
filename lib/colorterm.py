@@ -23,8 +23,14 @@ color terminal support
 '''
 
 import codecs
+import os
 import re
 import sys
+
+try:
+    _terminal_width = os.get_terminal_size()[0]
+except (AttributeError, OSError):
+    _terminal_width = 80
 
 class _seq:
     black = '\x1b[30m'
@@ -79,7 +85,7 @@ def print_hr():
         ch.encode(sys.stdout.encoding)
     except UnicodeError:
         ch = '-'
-    s = ch * 80
+    s = ch * _terminal_width
     tprint('{t.black}{t.bold}{s}{t.off}', s=s)
 
 __all__ = [
