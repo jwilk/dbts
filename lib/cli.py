@@ -68,7 +68,7 @@ def main():
         mod.run(options)
 
 __all__ = [
-    'main'
+    'main',
 ]
 
 # vim:ts=4 sts=4 sw=4 et
