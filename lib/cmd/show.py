@@ -82,7 +82,6 @@ def run(options):
     for bugno in options.bugs:
         run_one(bugno, options=options)
 
-
 def run_one(bugno, *, options):
     tprint = colorterm.tprint
     tprint('Location: {t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
