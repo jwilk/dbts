@@ -39,7 +39,6 @@ def autopager():
         try:
             sys.stdout = io.TextIOWrapper(pager.stdin,
                 encoding=orig_stdout.encoding,
-                errors='backslashreplace',
             )
             try:
                 yield
