@@ -54,7 +54,7 @@ def autopager():
         sys.stdout = orig_stdout
 
 __all__ = [
-    'autopager'
+    'autopager',
 ]
 
 # vim:ts=4 sts=4 sw=4 et
