@@ -58,7 +58,7 @@ class Graph(object):
         for src, dst in edges:
             self.edges[src].add(dst)
 
-    def pprint(self, *, file=sys.stdout, render=str):
+    def pprint(self, *, file=sys.stdout, render=str, bullet='∙'):
         roots = set(self.nodes.keys())
         for dsts in self.edges.values():
             roots -= dsts
@@ -68,11 +68,10 @@ class Graph(object):
                 return
             node = self.nodes[node_name]
             label = render(node)
-            bullet = '∙ ' if ilevel > 0 else ''
             label = indent.indent(
                 label,
                 max(0, (ilevel - 1) * 2),
-                bullet=bullet
+                bullet=(bullet + ' ' if ilevel > 0 else '')
             )
             print(label, file=file)
             seen.add(node_name)
@@ -81,9 +80,9 @@ class Graph(object):
         for root in sorted(roots):
             p(root, 0)
 
-    def pformat(self, *, render=str):
+    def pformat(self, *, render=str, bullet='∙'):
         fp = io.StringIO()
-        self.pprint(file=fp, render=render)
+        self.pprint(file=fp, render=render, bullet=bullet)
         return fp.getvalue()
 
     def __bool__(self):
