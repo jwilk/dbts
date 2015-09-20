@@ -25,7 +25,7 @@ Debian BTS SOAP client
 import base64
 import datetime
 
-from lib import soapbar
+import lxml.etree
 
 class BugStatus(object):
 
@@ -116,17 +116,52 @@ class BugStatus(object):
         s = self._xml.find('.//{Debbugs/SOAP}' + name).text or ''
         return [int(x) for x in s.split()]
 
+_query_template = '''\
+<soap:Envelope
+  soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:senc="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/1999/XMLSchema"
+>
+<soap:Body>
+<ns:{func} xmlns:ns="Debbugs/SOAP" senc:root="1">
+{args}
+</ns:get_status>
+</soap:Body>
+</soap:Envelope>
+'''
+
 class Client(object):
 
     def __init__(self, *, session):
-        self._backend = soapbar.Client(
-            session=session,
-            url='https://bugs.debian.org/cgi-bin/soap.cgi',
-            ns='Debbugs/SOAP'
+        self._session = session
+
+    def _call(self, funcname, *args):
+        if not all(isinstance(arg, int) for arg in args):
+            raise TypeError
+        data = _query_template.format(
+            func=funcname,
+            args=''.join(
+                '<v{i} xsi:type="xsd:int">{v}</v{i}>'.format(i=index, v=value)
+                for index, value in enumerate(args)
+            )
         )
+        data = data.encode('UTF-8')
+        headers = {
+            'Content-Type': 'application/soap+xml; charset=UTF-8',
+        }
+        response = self._session.post(url='https://bugs.debian.org/cgi-bin/soap.cgi',
+             headers=headers,
+             data=data,
+        )
+        response.raise_for_status()
+        tree = lxml.etree.fromstring(response.content)
+        [result] = tree.find('{http://schemas.xmlsoap.org/soap/envelope/}Body')
+        return result
 
     def get_status(self, n):
-        xml = self._backend.get_status(n)
+        xml = self._call('get_status', n)
         return BugStatus(xml)
 
 __all__ = ['BugStatus', 'Client']
