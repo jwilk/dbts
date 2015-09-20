@@ -33,4 +33,8 @@ def indent(s, n, bullet=''):
         flags=re.MULTILINE
     )[blen:]
 
+__all__ = [
+    'indent',
+]
+
 # vim:ts=4 sts=4 sw=4 et
