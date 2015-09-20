@@ -25,6 +25,8 @@ import os
 import appdirs
 import requests
 
+from lib import autopager
+
 if int(requests.__version__.split('.')[0]) < 1:
     raise RuntimeError('requests >= 1.0 is required')
 
@@ -58,6 +60,7 @@ def main():
     session.headers['User-Agent'] = 'dbts (https://github.com/jwilk/dbts)'
     options.session = session
     mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=options.cmd))
-    mod.run(options)
+    with autopager.autopager():
+        mod.run(options)
 
 # vim:ts=4 sts=4 sw=4 et
