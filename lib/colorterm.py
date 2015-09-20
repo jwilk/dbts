@@ -89,6 +89,7 @@ def print_hr():
     tprint('{t.black}{t.bold}{s}{t.off}', s=s)
 
 __all__ = [
+    'print_hr',
     'tformat',
     'tprint',
 ]
