@@ -127,7 +127,7 @@ _query_template = '''\
 <soap:Body>
 <ns:{func} xmlns:ns="Debbugs/SOAP" senc:root="1">
 {args}
-</ns:get_status>
+</ns:{func}>
 </soap:Body>
 </soap:Envelope>
 '''
