@@ -18,6 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+'''
+indenting multi-line strings
+'''
+
 import re
 
 def indent(s, n, bullet=''):
