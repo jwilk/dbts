@@ -105,9 +105,14 @@ def run(options):
     for bugno in options.bugs:
         run_one(bugno, options=options)
 
+def print_header(_h, _s=None, **kwargs):
+    template = '{t.yellow}' + _h + ':{t.off}'
+    if _s is not None:
+        template += ' ' + _s
+    colorterm.print(template, **kwargs)
+
 def run_one(bugno, *, options):
-    tprint = colorterm.print
-    tprint('Location: {t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
+    print_header('Location', '{t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
     response = session.get(url)
@@ -116,83 +121,83 @@ def run_one(bugno, *, options):
     html.make_links_absolute(base_url=url)
     debsoap_client = debsoap.Client(session=session)
     status = debsoap_client.get_status(bugno)
-    tprint('Subject: {t.bold}{subject}{t.off}', subject=status.subject)
+    print_header('Subject', '{t.bold}{subject}{t.off}', subject=status.subject)
     if status.package.startswith('src:'):
-        tprint('Source: {t.bold}{pkg}{t.off}', pkg=status.package[4:])
+        print_header('Source', '{t.bold}{pkg}{t.off}', pkg=status.package[4:])
     else:
-        tprint('Package: {t.bold}{pkg}{t.off}', pkg=status.package)
+        print_header('Package', '{t.bold}{pkg}{t.off}', pkg=status.package)
         if status.source is not None:
-            tprint('Source: {pkg}', pkg=status.source)
+            print_header('Source', '{pkg}', pkg=status.source)
     if status.affects:
-        tprint('Affects:')
+        print_header('Affects')
         for apkg in status.affects:
-            tprint('  {pkg}', pkg=apkg)
+            colorterm.print('  {pkg}', pkg=apkg)
     # TODO: Maintainer
     if status.owner:
-        tprint('Owner: {user}', user=status.owner)
+        print_header('Owner', '{user}', user=status.owner)
     if status.package == 'wnpp' and status.owner == status.submitter:
         pass
     else:
-        tprint('Submitter: {user}', user=status.submitter)
-    tprint('Date: {date} UTC', date=status.date)
+        print_header('Submitter', '{user}', user=status.submitter)
+    print_header('Date', '{date} UTC', date=status.date)
     severity_color = (
         '{t.bold}{t.red}' if status.severity in rc_severities
         else ''
     )
-    tprint('Severity: ' + severity_color + '{severity}{t.off}',
+    print_header('Severity', severity_color + '{severity}{t.off}',
         severity=status.severity,
     )
     version_graph = extract_bug_version_graph(html, options=options)
     if status.tags:
-        tprint('Tags: {tags}', tags=' '.join(status.tags))
+        print_header('Tags', '{tags}', tags=' '.join(status.tags))
     if status.merged_with:
-        tprint('Merged-with:')
+        print_header('Merged-with')
         for mbug in status.merged_with:
-            tprint('  https://bugs.debian.org/{N}', N=mbug)
+            colorterm.print('  https://bugs.debian.org/{N}', N=mbug)
     if status.found_versions:
-        tprint('Found:')
+        print_header('Found')
         for version in status.found_versions:
-            tprint('  {ver}', ver=version)
+            colorterm.print('  {ver}', ver=version)
     if status.fixed_versions:
-        tprint('Fixed:')
+        print_header('Fixed')
         for version in status.fixed_versions:
-            tprint('  {ver}', ver=version)
+            colorterm.print('  {ver}', ver=version)
     if version_graph:
-        tprint('Version-Graph:')
+        print_header('Version-Graph')
         print_version_graph(version_graph, ilevel=2)
     if status.blocked_by:
-        tprint('Blocked-by:')
+        print_header('Blocked-by')
         for bbug in status.blocked_by:
-            tprint('  https://bugs.debian.org/{N}', N=bbug)
+            colorterm.print('  https://bugs.debian.org/{N}', N=bbug)
     if status.blocks:
-        tprint('Blocks:')
+        print_header('Blocks')
         for bbug in status.blocks:
-            tprint('  https://bugs.debian.org/{N}', N=bbug)
+            colorterm.print('  https://bugs.debian.org/{N}', N=bbug)
     if status.done:
-        tprint('Done: {user}', user=status.done)
+        print_header('Done', '{user}', user=status.done)
     if status.archived:
-        tprint('Archived: yes')
+        print_header('Archived', 'yes')
     if status.forwarded:
-        tprint('Forwarded: {url}', url=status.forwarded)
+        print_header('Forwarded', '{url}', url=status.forwarded)
     colorterm.print_hr()
     bug_log = debsoap_client.get_log(bugno)
     for message in bug_log:
-        tprint('Location: https://bugs.debian.org/{N}#{id}', N=bugno, id=message.id)
+        print_header('Location', 'https://bugs.debian.org/{N}#{id}', N=bugno, id=message.id)
         headers = message.header
         for hname in ['From', 'To', 'Cc', 'Subject']:
             value = headers[hname]
             if value is None:
                 continue
             value = decode_header(value)
-            tprint('{h}: {v}', h=hname, v=value)
+            print_header(hname, '{v}', v=value)
         date = headers['Date']
         if date is not None:
-            tprint('Date: {date}', date=decode_date(date))
-        tprint()
+            print_header('Date', '{date}', date=decode_date(date))
+        colorterm.print()
         for line in message.body.splitlines():
-            tprint('{l}', l=line)
+            colorterm.print('{l}', l=line)
         colorterm.print_hr()
-    tprint()
+    colorterm.print()
 
 __all__ = [
     'add_argument_parser',
