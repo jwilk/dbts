@@ -36,10 +36,32 @@ def run_one(package, *, options):
     debsoap_client = debsoap.Client(session=options.session)
     bugs = debsoap_client.get_bugs(package=package)
     for bug in bugs:
-        colorterm.print('{n:>7} {t.bold}{subject}{t.off}',
+        colorterm.print('{n:>7} [{pkg}] {t.bold}{subject}{t.off}',
             n='#{n}'.format(n=bug.id),
+            pkg=bug.package,
             subject=bug.subject,
         )
+        template = '        {submitter}; {date}-00:00'
+        if bug.tags:
+            template += '; {tags}'
+        colorterm.print(template,
+            submitter=bug.submitter,
+            date=bug.date,
+            tags=' '.join(bug.tags)
+        )
+        template = ''
+        if bug.found_versions:
+            template = 'found in {found}'
+        if bug.fixed_versions:
+            if template:
+                template += '; '
+            template += 'fixed in {fixed}'
+        if template:
+            template = '        ' + template
+            colorterm.print(template,
+                found=' ,'.join(bug.found_versions),
+                fixed=' ,'.join(bug.fixed_versions),
+            )
 
 __all__ = [
     'add_argument_parser',
