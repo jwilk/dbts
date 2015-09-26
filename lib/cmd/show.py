@@ -114,6 +114,29 @@ def print_header(_h, _s=None, **kwargs):
 def normalize_space(s):
     return ' '.join(s.split())
 
+def print_control_message(html_message):
+    message = normalize_space(
+        ''.join(html_message.xpath('.//text()'))
+    )
+    colorterm.print()
+    colorterm.print('{msg}', msg=message)
+
+def print_message(message):
+    headers = message.header
+    for hname in ['From', 'To', 'Cc', 'Subject']:
+        value = headers[hname]
+        if value is None:
+            continue
+        value = decode_header(value)
+        value = normalize_space(value)
+        print_header(hname, '{v}', v=value)
+    date = headers['Date']
+    if date is not None:
+        print_header('Date', '{date}', date=decode_date(date))
+    colorterm.print()
+    for line in message.body.splitlines():
+        colorterm.print('{l}', l=line)
+
 def run_one(bugno, *, options):
     print_header('Location', '{t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
@@ -194,27 +217,9 @@ def run_one(bugno, *, options):
         try:
             message = bug_log[msgno]
         except KeyError:
-            message = normalize_space(
-                ''.join(html_message.xpath('.//text()'))
-            )
-            colorterm.print()
-            colorterm.print('{msg}', msg=message)
-            colorterm.print_hr()
-            continue
-        headers = message.header
-        for hname in ['From', 'To', 'Cc', 'Subject']:
-            value = headers[hname]
-            if value is None:
-                continue
-            value = decode_header(value)
-            value = normalize_space(value)
-            print_header(hname, '{v}', v=value)
-        date = headers['Date']
-        if date is not None:
-            print_header('Date', '{date}', date=decode_date(date))
-        colorterm.print()
-        for line in message.body.splitlines():
-            colorterm.print('{l}', l=line)
+            print_control_message(html_message)
+        else:
+            print_message(message)
         colorterm.print_hr()
     colorterm.print()
 
