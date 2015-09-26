@@ -231,13 +231,23 @@ class Client(object):
             int(elem.text)
             for elem in xml.findall('./{Debbugs/SOAP}item')
         ]
-        [xml] = self._call('get_status', *bug_numbers)
-        if len(bug_numbers) != len(xml):
-            raise RuntimeError('expected {n} bugs, got {m}'.format(n=len(bug_numbers), m=len(xml)))
-        return [
-            BugStatus(elem)
-            for elem in xml
-        ]
+        def groupby(iterable, n):
+            a = []
+            for o in iterable:
+                a += [o]
+                if len(a) == n:
+                    yield a
+                    a = []
+            if a:
+                yield a
+        batch_size = 500
+        result = []
+        for bug_group in groupby(bug_numbers, batch_size):
+            [xml] = self._call('get_status', *bug_group)
+            if len(bug_group) != len(xml):
+                raise RuntimeError('expected {n} bugs, got {m}'.format(n=len(bug_numbers), m=len(xml)))
+            for elem in xml:
+                yield BugStatus(elem)
 
 __all__ = [
     'BugLog',
