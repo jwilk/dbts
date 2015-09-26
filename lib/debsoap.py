@@ -185,8 +185,8 @@ class Client(object):
         data = _query_template.format(
             func=funcname,
             args=''.join(
-                '<v{i} xsi:type="xsd:int">{v}</v{i}>'.format(i=index, v=value)
-                for index, value in enumerate(args)
+                '<v xsi:type="xsd:int">{v}</v>'.format(v=value)
+                for value in args
             )
         )
         data = data.encode('UTF-8')
