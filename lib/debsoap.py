@@ -43,7 +43,7 @@ class BugStatus(object):
 
     @property
     def id(self):
-        return self._get('key')
+        return int(self._get('key'))
 
     @property
     def subject(self):
