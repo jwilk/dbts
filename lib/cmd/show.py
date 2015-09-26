@@ -174,6 +174,7 @@ def run_one(bugno, *, options):
         for apkg in status.affects:
             colorterm.print('  {pkg}', pkg=apkg)
     # TODO: Maintainer
+    # https://bugs.debian.org/553661
     if status.owner:
         print_header('Owner', '{user}', user=status.owner)
     if status.package == 'wnpp' and status.owner == status.submitter:
