@@ -23,6 +23,7 @@
 import datetime
 import email.header
 import email.utils
+import re
 import sys
 
 import lxml.html
@@ -118,6 +119,20 @@ def print_control_message(html_message):
     message = normalize_space(
         ''.join(html_message.xpath('.//text()'))
     )
+    match = re.match(
+        '^(.*) '
+        'Request was from (.+) to ([\w-]+@bugs[.]debian[.]org). '
+        '(?:[(]([A-Z][a-z]{2}, [0-9]{2} [A-Z][a-z]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT)[)] )?'
+        'Full text and rfc822 format available[.]$',
+        message
+    )
+    if match is not None:
+        message, req_from, req_to, date = match.groups()
+        print_header('Request-From', '{mail}', mail=req_from)
+        print_header('Request-To', '{mail}', mail=req_to)
+        if date is not None:
+            date = email.utils.parsedate_to_datetime(date)
+            print_header('Date', '{date}', date=date)
     colorterm.print()
     colorterm.print('{msg}', msg=message)
 
