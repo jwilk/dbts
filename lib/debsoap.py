@@ -25,6 +25,7 @@ Debian BTS SOAP client
 import base64
 import datetime
 import email
+import xml.sax.saxutils as saxutils
 
 import lxml.etree
 
@@ -39,6 +40,10 @@ class BugStatus(object):
 
     def __init__(self, xml):
         self._xml = xml
+
+    @property
+    def id(self):
+        return self._get('key')
 
     @property
     def subject(self):
@@ -176,16 +181,22 @@ _query_template = '''\
 
 class Client(object):
 
+    _xsd_types = {
+        int: 'xsd:int',
+        str: 'xsd:string',
+    }
+
     def __init__(self, *, session):
         self._session = session
 
     def _call(self, funcname, *args):
-        if not all(isinstance(arg, int) for arg in args):
-            raise TypeError
         data = _query_template.format(
             func=funcname,
             args=''.join(
-                '<v xsi:type="xsd:int">{v}</v>'.format(v=value)
+                '<v xsi:type="{tp}">{v}</v>'.format(
+                    v=saxutils.escape(str(value)),
+                    tp=self._xsd_types[type(value)],
+                )
                 for value in args
             )
         )
@@ -209,6 +220,24 @@ class Client(object):
     def get_log(self, n):
         [xml] = self._call('get_bug_log', n)
         return BugLog(xml)
+
+    def get_bugs(self, **query):
+        def flatten_dict(d):
+            for k, v in d.items():
+                yield k
+                yield v
+        [xml] = self._call('get_bugs', *flatten_dict(query))
+        bug_numbers = [
+            int(elem.text)
+            for elem in xml.findall('./{Debbugs/SOAP}item')
+        ]
+        [xml] = self._call('get_status', *bug_numbers)
+        if len(bug_numbers) != len(xml):
+            raise RuntimeError('expected {n} bugs, got {m}'.format(n=len(bug_numbers), m=len(xml)))
+        return [
+            BugStatus(elem)
+            for elem in xml
+        ]
 
 __all__ = [
     'BugLog',
