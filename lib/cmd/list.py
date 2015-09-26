@@ -36,7 +36,10 @@ def run_one(package, *, options):
     debsoap_client = debsoap.Client(session=options.session)
     bugs = debsoap_client.get_bugs(package=package)
     for bug in bugs:
-        colorterm.print('#{n} {t.bold}{subject}{t.off}', n=bug.id, subject=bug.subject)
+        colorterm.print('{n:>7} {t.bold}{subject}{t.off}',
+            n='#{n}'.format(n=bug.id),
+            subject=bug.subject,
+        )
 
 __all__ = [
     'add_argument_parser',
