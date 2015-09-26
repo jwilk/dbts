@@ -124,11 +124,17 @@ class BugStatus(object):
 class BugLog(object):
 
     def __init__(self, xml):
-        self._xml = xml
+        self._messages = {}
+        for elem in xml:
+            message = BugMessage(elem)
+            self._messages[message.id] = message
 
     def __iter__(self):
-        for elem in self._xml:
-            yield BugMessage(elem)
+        for n, message in sorted(self._messages.items()):
+            yield message
+
+    def __getitem__(self, n):
+        return self._messages[n]
 
 class BugMessage(object):
 

@@ -111,6 +111,9 @@ def print_header(_h, _s=None, **kwargs):
         template += ' ' + _s
     colorterm.print(template, **kwargs)
 
+def normalize_space(s):
+    return ' '.join(s.split())
+
 def run_one(bugno, *, options):
     print_header('Location', '{t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
@@ -181,8 +184,23 @@ def run_one(bugno, *, options):
         print_header('Forwarded', '{url}', url=status.forwarded)
     colorterm.print_hr()
     bug_log = debsoap_client.get_log(bugno)
-    for message in bug_log:
-        print_header('Location', 'https://bugs.debian.org/{N}#{id}', N=bugno, id=message.id)
+    html_messages = html.xpath('//*[@class="msgreceived"]')
+    for html_message in html_messages:
+        anchors = html_message.xpath('./a/@name')
+        if not anchors:
+            continue
+        msgno = int(anchors[0])
+        print_header('Location', 'https://bugs.debian.org/{N}#{id}', N=bugno, id=msgno)
+        try:
+            message = bug_log[msgno]
+        except KeyError:
+            message = normalize_space(
+                ''.join(html_message.xpath('.//text()'))
+            )
+            colorterm.print()
+            colorterm.print('{msg}', msg=message)
+            colorterm.print_hr()
+            continue
         headers = message.header
         for hname in ['From', 'To', 'Cc', 'Subject']:
             value = headers[hname]
