@@ -207,6 +207,7 @@ def run_one(bugno, *, options):
             if value is None:
                 continue
             value = decode_header(value)
+            value = normalize_space(value)
             print_header(hname, '{v}', v=value)
         date = headers['Date']
         if date is not None:
