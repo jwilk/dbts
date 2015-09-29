@@ -70,8 +70,8 @@ def run_one(package, *, options):
         if template:
             template = '        ' + template
             colorterm.print(template,
-                found=' ,'.join(bug.found_versions),
-                fixed=' ,'.join(bug.fixed_versions),
+                found=', '.join(bug.found_versions),
+                fixed=', '.join(bug.fixed_versions),
             )
 
 __all__ = [
