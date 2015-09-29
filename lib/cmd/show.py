@@ -31,6 +31,7 @@ import lxml.html
 from lib import colorterm
 from lib import dotparser
 from lib import indent
+from lib import deblogic
 from lib import debsoap
 
 def print_version_graph(graph, *, ilevel=0):
@@ -77,12 +78,6 @@ def decode_header(s):
             email.header.decode_header(s)
         )
     )
-
-rc_severities = {
-    'serious',
-    'grave',
-    'critical',
-}
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('show')
@@ -171,7 +166,7 @@ def run_one(bugno, *, options):
         print_header('Submitter', '{user}', user=status.submitter)
     print_header('Date', '{date}-00:00', date=status.date)
     severity_color = (
-        '{t.bold}{t.red}' if status.severity in rc_severities
+        '{t.bold}{t.red}' if status.severity in deblogic.rc_severities
         else ''
     )
     print_header('Severity', severity_color + '{severity}{t.off}',
