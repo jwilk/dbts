@@ -36,10 +36,18 @@ def run_one(package, *, options):
     debsoap_client = debsoap.Client(session=options.session)
     bugs = debsoap_client.get_bugs(package=package)
     for bug in bugs:
-        colorterm.print('{n:>7} [{pkg}] {t.bold}{subject}{t.off}',
+        package = bug.package
+        subject = bug.subject
+        if subject.startswith(('O:', 'RFA:', 'RFH:', 'ITP:', 'RFP:')) and package == 'wnpp':
+            package = None
+        template = '{n:>7} '
+        if package is not None:
+            template += '[{pkg}] '
+        template += '{t.bold}{subject}{t.off}'
+        colorterm.print(template,
             n='#{n}'.format(n=bug.id),
-            pkg=bug.package,
-            subject=bug.subject,
+            pkg=package,
+            subject=subject,
         )
         template = '        {submitter}; {date}-00:00'
         if bug.tags:
