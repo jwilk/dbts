@@ -21,6 +21,7 @@
 'the “list” command'
 
 from lib import colorterm
+from lib import deblogic
 from lib import debsoap
 
 def add_argument_parser(subparsers):
@@ -50,16 +51,30 @@ def run_one(package, *, options):
             subject=subject,
         )
         template = '        {user}; {date}-00:00'
-        if bug.tags:
-            template += '; {tags}'
         user = bug.submitter
         if package == 'wnpp' and bug.owner is not None:
             user = bug.owner
         colorterm.print(template,
             user=user,
             date=bug.date,
-            tags=' '.join(bug.tags)
         )
+        template = ''
+        if bug.severity != 'normal':
+            severity_color = (
+                '{t.bold}{t.red}' if bug.severity in deblogic.rc_severities
+                else ''
+            )
+            template = severity_color + '{severity}{t.off}'
+        if bug.tags:
+            if template:
+                template += ' '
+            template += '{tags}'
+        if template:
+            template = '        ' + template
+            colorterm.print(template,
+                tags=' '.join('+' + t for t in bug.tags),
+                severity=bug.severity,
+            )
         template = ''
         if bug.found_versions:
             template = 'found in {found}'
