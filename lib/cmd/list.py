@@ -49,11 +49,14 @@ def run_one(package, *, options):
             pkg=package,
             subject=subject,
         )
-        template = '        {submitter}; {date}-00:00'
+        template = '        {user}; {date}-00:00'
         if bug.tags:
             template += '; {tags}'
+        user = bug.submitter
+        if package == 'wnpp' and bug.owner is not None:
+            user = bug.owner
         colorterm.print(template,
-            submitter=bug.submitter,
+            user=user,
             date=bug.date,
             tags=' '.join(bug.tags)
         )
