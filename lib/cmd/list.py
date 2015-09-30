@@ -26,16 +26,34 @@ from lib import debsoap
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('list')
-    ap.add_argument('packages', metavar='PKG', type=str, nargs='+')
+    ap.add_argument('selections', metavar='SELECTION', type=str, nargs='+')
     return ap
 
 def run(options):
-    for package in options.packages:
-        run_one(package, options=options)
+    for selection in options.selections:
+        run_one(selection, options=options)
 
-def run_one(package, *, options):
+selectors = {
+    'src': 'src',
+    'source': 'src',
+    'maint': 'maintainer',
+    'maintainer': 'maintainer',
+    'owner': 'owner',
+    'from': 'submitter',
+    'submitter': 'submitter',
+    'correspondent': 'correspondent',
+    'commented': 'correspondent',
+}
+
+def run_one(selection, *, options):
     debsoap_client = debsoap.Client(session=options.session)
-    bugs = debsoap_client.get_bugs(package=package)
+    if ':' in selection:
+        selector, value = selection.split(':', 1)
+        selector = selectors[selector]
+        query = {selector: value}
+    else:
+        query = dict(package=selection)
+    bugs = debsoap_client.get_bugs(**query)
     for bug in bugs:
         package = bug.package
         subject = bug.subject
