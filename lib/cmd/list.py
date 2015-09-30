@@ -61,7 +61,7 @@ def run_one(selection, *, options):
     bugs = debsoap_client.get_bugs(**query)
     for bug in bugs:
         package = bug.package
-        subject = bug.subject
+        subject = bug.subject or ''
         default_severity = 'normal'
         if package == 'wnpp':
             for wnpp_tag in deblogic.wnpp_tags:
@@ -92,7 +92,10 @@ def run_one(selection, *, options):
                     template += '[' +  subject_color + '{pkg}{t.off}] '
                 else:
                     template += '[{pkg}] '
-        template += subject_color + '{subject}{t.off}'
+        if subject:
+            template += subject_color + '{subject}{t.off}'
+        else:
+            template += '{t.red}(no subject){t.off}'
         colorterm.print(template,
             n='#{n}'.format(n=bug.id),
             pkg=package,
