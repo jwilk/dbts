@@ -108,6 +108,7 @@ def run_one(selection, *, options):
                 found=', '.join(bug.found_versions),
                 fixed=', '.join(bug.fixed_versions),
             )
+        print()
 
 __all__ = [
     'add_argument_parser',
