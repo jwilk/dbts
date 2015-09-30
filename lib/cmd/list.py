@@ -20,6 +20,8 @@
 
 'the “list” command'
 
+import re
+
 from lib import colorterm
 from lib import deblogic
 from lib import debsoap
@@ -45,6 +47,9 @@ selectors = {
     'commented': 'correspondent',
 }
 
+def strip_package_prefix(subject, package):
+    return re.sub(re.escape(package) + r':?\s*', '', subject)
+
 def run_one(selection, *, options):
     debsoap_client = debsoap.Client(session=options.session)
     if ':' in selection:
@@ -62,13 +67,29 @@ def run_one(selection, *, options):
             if subject.startswith(wnpp_prefixes):
                 package = None
         template = '{n:>7} '
+        source = None
+        subject_color = '{t.green}' if bug.done else '{t.bold}'
         if package is not None:
-            template += '[{pkg}] '
-        template += '{t.green}' if bug.done else '{t.bold}'
-        template += '{subject}{t.off}'
+            if package.startswith('src:'):
+                source = package[4:]
+                new_subject = strip_package_prefix(subject, source)
+                if subject != new_subject:
+                    subject = new_subject
+                    template += '[src:' +  subject_color + '{src}{t.off}] '
+                else:
+                    template += '[src:{src}] '
+            else:
+                new_subject = strip_package_prefix(subject, package)
+                if subject != new_subject:
+                    subject = new_subject
+                    template += '[' +  subject_color + '{pkg}{t.off}] '
+                else:
+                    template += '[{pkg}] '
+        template += subject_color + '{subject}{t.off}'
         colorterm.print(template,
             n='#{n}'.format(n=bug.id),
             pkg=package,
+            src=source,
             subject=subject,
         )
         template = '        {user}; {date}-00:00'
