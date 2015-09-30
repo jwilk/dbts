@@ -132,7 +132,8 @@ def print_message(message):
         date = email.utils.parsedate_to_datetime(date)
         print_header('Date', '{date}', date=date)
     colorterm.print()
-    for line in message.body.splitlines():
+    body = message.body or ''
+    for line in body.splitlines():
         colorterm.print('{l}', l=line)
 
 def run_one(bugno, *, options):
