@@ -24,4 +24,12 @@ rc_severities = {
     'critical',
 }
 
+wnpp_tags = {
+    'O',
+    'RFA',
+    'RFH',
+    'ITP',
+    'RFP',
+}
+
 # vim:ts=4 sts=4 sw=4 et

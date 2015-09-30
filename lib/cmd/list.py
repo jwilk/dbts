@@ -39,8 +39,10 @@ def run_one(package, *, options):
     for bug in bugs:
         package = bug.package
         subject = bug.subject
-        if subject.startswith(('O:', 'RFA:', 'RFH:', 'ITP:', 'RFP:')) and package == 'wnpp':
-            package = None
+        if package == 'wnpp':
+            wnpp_prefixes = tuple(t + ':' for t in deblogic.wnpp_tags)
+            if subject.startswith(wnpp_prefixes):
+                package = None
         template = '{n:>7} '
         if package is not None:
             template += '[{pkg}] '
