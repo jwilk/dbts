@@ -47,11 +47,14 @@ class _seq:
 def print(_s='', **kwargs):
     builtins.print(format(_s, **kwargs))
 
+def _quote_unsafe_char(ch):
+    if ch == '\t':
+        return '{t.reverse}\t{t.unreverse}'.format(t=_seq)
+    else:
+        return '{t.reverse}<U+{u:04X}>{t.unreverse}'.format(t=_seq, u=ord(ch))
+
 def _quote_unsafe(s):
-    return ''.join(
-        '{t.reverse}<U+{u:04X}>{t.unreverse}'.format(t=_seq, u=ord(ch))
-        for ch in s
-    )
+    return ''.join(map(_quote_unsafe_char, s))
 
 def _encoding_error_handler(exc):
     if isinstance(exc, UnicodeEncodeError):
