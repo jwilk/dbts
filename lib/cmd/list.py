@@ -48,7 +48,8 @@ selectors = {
 }
 
 def strip_package_prefix(subject, package):
-    return re.sub(re.escape(package) + r':?\s*', '', subject)
+    regex = r'{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
+    return re.sub(regex, '', subject)
 
 def run_one(selection, *, options):
     debsoap_client = debsoap.Client(session=options.session)
