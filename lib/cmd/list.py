@@ -70,6 +70,9 @@ def run_one(selection, *, options):
                         default_severity = 'wishlist'
                     package = None
                     break
+        elif package == 'sponsorship-requests':
+            if subject.startswith('RFS:'):
+                package = None
         template = '{n:>7} '
         source = None
         subject_color = '{t.green}' if bug.done else '{t.bold}'
