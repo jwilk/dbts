@@ -64,7 +64,8 @@ def run_one(selection, *, options):
         template = '{n:>7} '
         if package is not None:
             template += '[{pkg}] '
-        template += '{t.bold}{subject}{t.off}'
+        template += '{t.green}' if bug.done else '{t.bold}'
+        template += '{subject}{t.off}'
         colorterm.print(template,
             n='#{n}'.format(n=bug.id),
             pkg=package,
