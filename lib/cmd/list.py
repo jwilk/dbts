@@ -62,10 +62,14 @@ def run_one(selection, *, options):
     for bug in bugs:
         package = bug.package
         subject = bug.subject
+        default_severity = 'normal'
         if package == 'wnpp':
-            wnpp_prefixes = tuple(t + ':' for t in deblogic.wnpp_tags)
-            if subject.startswith(wnpp_prefixes):
-                package = None
+            for wnpp_tag in deblogic.wnpp_tags:
+                if subject.startswith(wnpp_tag + ': '):
+                    if wnpp_tag[-1] == 'P':
+                        default_severity = 'wishlist'
+                    package = None
+                    break
         template = '{n:>7} '
         source = None
         subject_color = '{t.green}' if bug.done else '{t.bold}'
@@ -101,7 +105,7 @@ def run_one(selection, *, options):
             date=bug.date,
         )
         template = ''
-        if bug.severity != 'normal':
+        if bug.severity != default_severity:
             severity_color = (
                 '{t.bold}{t.red}' if bug.severity in deblogic.rc_severities
                 else ''
