@@ -71,6 +71,12 @@ def extract_bug_version_graph(html, *, options):
     response.raise_for_status()
     return dotparser.parse(response.text)
 
+def extract_maintainers(html, *, options):
+    result = []
+    for elem in html.xpath('//div[@class="pkginfo"]//a'):
+        if '?maint=' in elem.get('href'):
+            yield elem.text
+
 def decode_header(s):
     return str(
         email.header.make_header(
@@ -157,8 +163,11 @@ def run_one(bugno, *, options):
         print_header('Affects')
         for apkg in status.affects:
             colorterm.print('  {pkg}', pkg=apkg)
-    # TODO: Maintainer
+    # TODO: use SOAP to extract Maintainer
     # https://bugs.debian.org/553661
+    print_header('Maintainer', '{maint}',
+        maint=', '.join(extract_maintainers(html, options=options))
+    )
     if status.owner:
         print_header('Owner', '{user}', user=status.owner)
     if status.package == 'wnpp' and status.owner == status.submitter:
