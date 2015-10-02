@@ -81,6 +81,7 @@ def decode_header(s):
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('show')
     ap.add_argument('bugs', metavar='BUGNO', type=int, nargs='+')
+    ap.add_argument('--merged', action='store_true', help='show also merged bugs')
     return ap
 
 def run(options):
@@ -221,6 +222,13 @@ def run_one(bugno, *, options):
             print_message(message)
         colorterm.print_hr()
     colorterm.print()
+    if options.merged:
+        options.merged = False
+        try:
+            for mbug in status.merged_with:
+                run_one(mbug, options=options)
+        finally:
+            options.merged = True
 
 __all__ = [
     'add_argument_parser',
