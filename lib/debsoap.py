@@ -221,16 +221,21 @@ class Client(object):
         [xml] = self._call('get_bug_log', n)
         return BugLog(xml)
 
-    def get_bugs(self, **query):
+    def get_bugs(self, *queries):
         def flatten_dict(d):
             for k, v in d.items():
                 yield k
                 yield v
-        [xml] = self._call('get_bugs', *flatten_dict(query))
-        bug_numbers = [
-            int(elem.text)
-            for elem in xml.findall('./{Debbugs/SOAP}item')
-        ]
+        bug_numbers = set()
+        for query in queries:
+            if isinstance(query, int):
+                bug_numbers.add(query)
+                continue
+            [xml] = self._call('get_bugs', *flatten_dict(query))
+            bug_numbers.update(
+                int(elem.text)
+                for elem in xml.findall('./{Debbugs/SOAP}item')
+            )
         def groupby(iterable, n):
             a = []
             for o in iterable:
@@ -242,7 +247,7 @@ class Client(object):
                 yield a
         batch_size = 500
         result = []
-        for bug_group in groupby(bug_numbers, batch_size):
+        for bug_group in groupby(sorted(bug_numbers), batch_size):
             [xml] = self._call('get_status', *bug_group)
             if len(bug_group) != len(xml):
                 raise RuntimeError('expected {n} bugs, got {m}'.format(n=len(bug_numbers), m=len(xml)))

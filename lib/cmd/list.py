@@ -31,10 +31,6 @@ def add_argument_parser(subparsers):
     ap.add_argument('selections', metavar='SELECTION', type=str, nargs='+')
     return ap
 
-def run(options):
-    for selection in options.selections:
-        run_one(selection, options=options)
-
 selectors = {
     'src': 'src',
     'source': 'src',
@@ -51,15 +47,20 @@ def strip_package_prefix(subject, package):
     regex = r'{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
     return re.sub(regex, '', subject)
 
-def run_one(selection, *, options):
+def run(options):
     debsoap_client = debsoap.Client(session=options.session)
-    if ':' in selection:
-        selector, value = selection.split(':', 1)
-        selector = selectors[selector]
-        query = {selector: value}
-    else:
-        query = dict(package=selection)
-    bugs = debsoap_client.get_bugs(**query)
+    queries = []
+    for selection in options.selections:
+        if selection.isdigit():
+            query = int(selection)
+        elif ':' in selection:
+            selector, value = selection.split(':', 1)
+            selector = selectors[selector]
+            query = {selector: value}
+        else:
+            query = dict(package=selection)
+        queries += [query]
+    bugs = debsoap_client.get_bugs(*queries)
     for bug in bugs:
         package = bug.package
         subject = bug.subject or ''
