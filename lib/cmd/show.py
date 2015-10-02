@@ -72,7 +72,6 @@ def extract_bug_version_graph(html, *, options):
     return dotparser.parse(response.text)
 
 def extract_maintainers(html, *, options):
-    result = []
     for elem in html.xpath('//div[@class="pkginfo"]//a'):
         if '?maint=' in elem.get('href'):
             yield elem.text
