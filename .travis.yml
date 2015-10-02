@@ -3,10 +3,22 @@ python:
 - "3.3"
 - "3.4"
 - nightly
-- pypy3
+matrix:
+  allow_failures:
+  - python: nightly
 install:
+- pip install --upgrade pip
+- pip install appdirs
+- pip install requests
+- pip install --verbose lxml
 - pip install pyflakes
+cache:
+  directories:
+  - $HOME/.cache
 script:
+- export PAGER=cat
+- python ./dbts show 123456 654321
+- python ./dbts list adequate
 - ./private/run-pyflakes
 
 # vim:ts=2 sts=2 sw=2 et
