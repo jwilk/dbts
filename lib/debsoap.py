@@ -246,7 +246,6 @@ class Client(object):
             if a:
                 yield a
         batch_size = 500
-        result = []
         for bug_group in groupby(sorted(bug_numbers), batch_size):
             [xml] = self._call('get_status', *bug_group)
             if len(bug_group) != len(xml):
