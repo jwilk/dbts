@@ -164,15 +164,15 @@ def run_one(bugno, *, options):
         print_header('Package', template, pkgs=packages)
         if status.source is not None:
             print_header('Source', '{pkg}', pkg=status.source)
-    if status.affects:
-        print_header('Affects')
-        for apkg in status.affects:
-            colorterm.print('  {pkg}', pkg=apkg)
     # TODO: use SOAP to extract Maintainer
     # https://bugs.debian.org/553661
     print_header('Maintainer', '{maint}',
         maint=', '.join(extract_maintainers(html, options=options))
     )
+    if status.affects:
+        print_header('Affects')
+        for apkg in status.affects:
+            colorterm.print('  {pkg}', pkg=apkg)
     if status.owner:
         print_header('Owner', '{user}', user=status.owner)
     if status.package == 'wnpp' and status.owner == status.submitter:
