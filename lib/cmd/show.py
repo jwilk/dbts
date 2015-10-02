@@ -153,10 +153,15 @@ def run_one(bugno, *, options):
     debsoap_client = debsoap.Client(session=session)
     status = debsoap_client.get_status(bugno)
     print_header('Subject', '{t.bold}{subject}{t.off}', subject=status.subject)
-    if status.package.startswith('src:'):
+    if ',' not in status.package and status.package.startswith('src:'):
         print_header('Source', '{t.bold}{pkg}{t.off}', pkg=status.package[4:])
     else:
-        print_header('Package', '{t.bold}{pkg}{t.off}', pkg=status.package)
+        packages = status.package.split(',')
+        template = ', '.join(
+            '{t.bold}{pkgs[N]}{t.off}'.replace('N', str(i))
+            for i, _ in enumerate(packages)
+        )
+        print_header('Package', template, pkgs=packages)
         if status.source is not None:
             print_header('Source', '{pkg}', pkg=status.source)
     if status.affects:
