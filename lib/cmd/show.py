@@ -20,7 +20,6 @@
 
 'the “show” command'
 
-import datetime
 import email.header
 import email.utils
 import re
