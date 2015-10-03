@@ -39,6 +39,7 @@ class _seq:
     green = '\x1b[32m'
     yellow = '\x1b[33m'
     blue = '\x1b[34m'
+    cyan = '\x1b[36m'
     bold = '\x1b[1m'
     off = '\x1b[0m'
     reverse = '\x1b[7m'
