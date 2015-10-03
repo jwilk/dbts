@@ -171,7 +171,7 @@ def print_message(message, attachments=()):
         colorterm.print('{l}', l=line)
 
 def run_one(bugno, *, options):
-    print_header('Location', '{t.blue}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
+    print_header('Location', '{t.cyan}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
     response = session.get(url)
@@ -221,7 +221,7 @@ def run_one(bugno, *, options):
     if status.merged_with:
         print_header('Merged-with')
         for mbug in status.merged_with:
-            colorterm.print('  https://bugs.debian.org/{N}', N=mbug)
+            colorterm.print('  {t.cyan}https://bugs.debian.org/{N}{t.off}', N=mbug)
     if status.found_versions:
         print_header('Found')
         for version in status.found_versions:
@@ -236,11 +236,11 @@ def run_one(bugno, *, options):
     if status.blocked_by:
         print_header('Blocked-by')
         for bbug in status.blocked_by:
-            colorterm.print('  https://bugs.debian.org/{N}', N=bbug)
+            colorterm.print('  {t.cyan}https://bugs.debian.org/{N}{t.off}', N=bbug)
     if status.blocks:
         print_header('Blocks')
         for bbug in status.blocks:
-            colorterm.print('  https://bugs.debian.org/{N}', N=bbug)
+            colorterm.print('  {t.cyan}https://bugs.debian.org/{N}{t.off}', N=bbug)
     if status.done:
         print_header('Done', '{user}', user=status.done)
     if status.archived:
@@ -256,7 +256,7 @@ def run_one(bugno, *, options):
         if not anchors:
             continue
         msgno = int(anchors[0])
-        print_header('Location', 'https://bugs.debian.org/{N}#{id}', N=bugno, id=msgno)
+        print_header('Location', '{t.cyan}https://bugs.debian.org/{N}#{id}{t.off}', N=bugno, id=msgno)
         try:
             message = bug_log[msgno]
         except KeyError:
