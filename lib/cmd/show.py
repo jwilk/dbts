@@ -71,7 +71,7 @@ def extract_bug_version_graph(html, *, options):
     response.raise_for_status()
     return dotparser.parse(response.text)
 
-def extract_maintainers(html, *, options):
+def extract_maintainers(html):
     for elem in html.xpath('//div[@class="pkginfo"]//a'):
         if '?maint=' in elem.get('href'):
             yield elem.text
@@ -166,7 +166,7 @@ def run_one(bugno, *, options):
     # TODO: use SOAP to extract Maintainer
     # https://bugs.debian.org/553661
     print_header('Maintainer', '{maint}',
-        maint=', '.join(extract_maintainers(html, options=options))
+        maint=', '.join(extract_maintainers(html))
     )
     if status.affects:
         print_header('Affects')
