@@ -18,6 +18,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+'''
+Debian constants, etc.
+'''
+
 rc_severities = {
     'serious',
     'grave',
