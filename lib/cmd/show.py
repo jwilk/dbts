@@ -20,10 +20,12 @@
 
 'the “show” command'
 
+import collections
 import email.header
 import email.utils
 import re
 import sys
+import urllib.parse
 
 import lxml.html
 
@@ -76,6 +78,22 @@ def extract_maintainers(html):
         if '?maint=' in elem.get('href'):
             yield elem.text
 
+def extract_attachments(html):
+    result = collections.defaultdict(list)
+    for elem in html.xpath('//pre[@class="mime"][not(following-sibling::pre[@class="message"])]/a'):
+        url = elem.get('href')
+        query = urllib.parse.urlparse(url).query
+        query = urllib.parse.parse_qs(query)
+        [msg] = query['msg']
+        msg = int(msg)
+        tp = elem.xpath('./parent::*/text()')[-1]
+        tp = tp.strip('() ]')
+        name = elem.text
+        if re.match('^Message part [0-9]+$', name):
+            name = None
+        result[msg] += [(name, url, tp)]
+    return result
+
 def decode_header(s):
     return str(
         email.header.make_header(
@@ -123,7 +141,7 @@ def print_control_message(html_message):
     colorterm.print()
     colorterm.print('{msg}', msg=message)
 
-def print_message(message):
+def print_message(message, attachments=()):
     headers = message.header
     for hname in ['From', 'To', 'Cc', 'Subject']:
         value = headers[hname]
@@ -136,6 +154,17 @@ def print_message(message):
     if date is not None:
         date = email.utils.parsedate_to_datetime(date)
         print_header('Date', '{date}', date=date)
+    if attachments:
+        print_header('Attachments')
+        for name, url, tp in attachments:
+            template = '<{t.cyan}{url}{t.off}> ({tp})'
+            if name is not None:
+                template = '{name} ' + template
+            colorterm.print('  ' + template,
+                name=name,
+                url=url,
+                tp=tp
+            )
     colorterm.print()
     body = message.body or ''
     for line in body.splitlines():
@@ -221,6 +250,7 @@ def run_one(bugno, *, options):
     colorterm.print_hr()
     bug_log = debsoap_client.get_log(bugno)
     html_messages = html.xpath('//*[@class="msgreceived"]')
+    attachments = extract_attachments(html)
     for html_message in html_messages:
         anchors = html_message.xpath('./a/@name')
         if not anchors:
@@ -232,7 +262,7 @@ def run_one(bugno, *, options):
         except KeyError:
             print_control_message(html_message)
         else:
-            print_message(message)
+            print_message(message, attachments=attachments[msgno])
         colorterm.print_hr()
     colorterm.print()
     if options.merged:
