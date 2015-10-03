@@ -32,4 +32,9 @@ wnpp_tags = {
     'RFP',
 }
 
+__all__ = [
+    'rc_severities',
+    'wnpp_tags',
+]
+
 # vim:ts=4 sts=4 sw=4 et
