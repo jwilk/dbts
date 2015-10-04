@@ -21,6 +21,7 @@
 'the “list” command'
 
 import re
+import functools
 
 from lib import colorterm
 from lib import deblogic
@@ -31,6 +32,17 @@ def add_argument_parser(subparsers):
     ap.add_argument('selections', metavar='SELECTION', type=str, nargs='+')
     return ap
 
+def select_sources_for(pkgname):
+    @functools.lru_cache(maxsize=None)
+    def get_cache():
+        import apt
+        return apt.Cache()
+    cache = get_cache()
+    return [
+        {'src': pkg.source_name}
+        for pkg in cache[pkgname].versions
+    ]
+
 selectors = {
     'commented': 'correspondent',
     'correspondent': 'correspondent',
@@ -40,6 +52,8 @@ selectors = {
     'owner': 'owner',
     'source': 'src',
     'src': 'src',
+    'srcfor': select_sources_for,
+    'sourcefor': select_sources_for,
     'submitter': 'submitter',
 }
 
@@ -57,14 +71,16 @@ def run(options):
         except ValueError:
             pass
         if bugno is not None:
-            query = bugno
+            queries += [bugno]
         elif ':' in selection:
             selector, value = selection.split(':', 1)
             selector = selectors[selector]
-            query = {selector: value}
+            if callable(selector):
+                queries += selector(value)
+            else:
+                queries += [{selector: value}]
         else:
-            query = dict(package=selection)
-        queries += [query]
+            queries += [dict(package=selection)]
     bugs = debsoap_client.get_bugs(*queries)
     for bug in bugs:
         package = bug.package
