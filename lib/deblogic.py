@@ -22,6 +22,9 @@
 Debian constants, etc.
 '''
 
+import re
+import urllib.parse
+
 rc_severities = {
     'serious',
     'grave',
@@ -36,7 +39,30 @@ wnpp_tags = {
     'RFP',
 }
 
+def parse_bugspec(s):
+    match = re.match(r'\A[#]?([0-9]+)\Z', s)
+    if match is not None:
+        n = match.group(1)
+        return int(n)
+    url = urllib.parse.urlparse(s)
+    if url.scheme not in {'http', 'https'}:
+        raise ValueError
+    if url.netloc != 'bugs.debian.org':
+        raise ValueError
+    match = re.match(r'\A/([0-9]+)\Z', url.path)
+    if match is not None:
+        n = match.group(1)
+        return int(n)
+    if url.path == '/cgi-bin/bugreport.cgi':
+        query = urllib.parse.parse_qs(url.query)
+        try:
+            [n] = query['bug']
+        except KeyError:
+            raise ValueError
+        return int(n)
+
 __all__ = [
+    'parse_bugspec',
     'rc_severities',
     'wnpp_tags',
 ]
