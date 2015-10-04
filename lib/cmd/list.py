@@ -48,6 +48,8 @@ selectors = {  # sort -t: -k2
     'correspondent': 'correspondent',
     'maint': 'maintainer',
     'maintainer': 'maintainer',
+    'last': 'newest',
+    'newest': 'newest',
     'owner': 'owner',
     'source': 'src',
     'src': 'src',
