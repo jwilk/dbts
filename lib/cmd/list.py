@@ -82,6 +82,7 @@ def run(options):
         else:
             queries += [dict(package=selection)]
     bugs = debsoap_client.get_bugs(*queries)
+    bugs = sorted(bugs, key=(lambda bug: -bug.id))
     for bug in bugs:
         package = bug.package
         subject = bug.subject or ''
