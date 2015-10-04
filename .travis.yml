@@ -17,6 +17,7 @@ cache:
   directories:
   - $HOME/.cache
 script:
+- nosetests -v
 - export PAGER=cat
 - python ./dbts show 123456 654321
 - python ./dbts list adequate
