@@ -32,15 +32,15 @@ def add_argument_parser(subparsers):
     return ap
 
 selectors = {
-    'src': 'src',
-    'source': 'src',
+    'commented': 'correspondent',
+    'correspondent': 'correspondent',
+    'from': 'submitter',
     'maint': 'maintainer',
     'maintainer': 'maintainer',
     'owner': 'owner',
-    'from': 'submitter',
+    'source': 'src',
+    'src': 'src',
     'submitter': 'submitter',
-    'correspondent': 'correspondent',
-    'commented': 'correspondent',
 }
 
 def strip_package_prefix(subject, package):
