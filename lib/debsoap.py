@@ -231,7 +231,12 @@ class Client(object):
             if isinstance(query, int):
                 bug_numbers.add(query)
                 continue
-            [xml] = self._call('get_bugs', *flatten_dict(query))
+            if 'newest' in query:
+                [n] = query.values()
+                n = int(n)
+                [xml] = self._call('newest_bugs', n)
+            else:
+                [xml] = self._call('get_bugs', *flatten_dict(query))
             bug_numbers.update(
                 int(elem.text)
                 for elem in xml.findall('./{Debbugs/SOAP}item')
