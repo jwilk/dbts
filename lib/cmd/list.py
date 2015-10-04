@@ -43,18 +43,18 @@ def select_sources_for(pkgname):
         for pkg in cache[pkgname].versions
     ]
 
-selectors = {
+selectors = {  # sort -t: -k2
     'commented': 'correspondent',
     'correspondent': 'correspondent',
-    'from': 'submitter',
     'maint': 'maintainer',
     'maintainer': 'maintainer',
     'owner': 'owner',
     'source': 'src',
     'src': 'src',
-    'srcfor': select_sources_for,
-    'sourcefor': select_sources_for,
+    'from': 'submitter',
     'submitter': 'submitter',
+    'sourcefor': select_sources_for,
+    'srcfor': select_sources_for,
 }
 
 def strip_package_prefix(subject, package):
