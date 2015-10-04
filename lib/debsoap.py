@@ -247,6 +247,8 @@ class Client(object):
                 yield a
         batch_size = 500
         for bug_group in groupby(sorted(bug_numbers), batch_size):
+            # sort() is here only to make HTTP requests reproducible;
+            # no particular output order is guaranteed
             [xml] = self._call('get_status', *bug_group)
             if len(bug_group) != len(xml):
                 raise RuntimeError('expected {n} bugs, got {m}'.format(n=len(bug_numbers), m=len(xml)))
