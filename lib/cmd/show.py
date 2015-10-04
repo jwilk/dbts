@@ -103,12 +103,16 @@ def decode_header(s):
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('show')
-    ap.add_argument('bugs', metavar='BUGNO', type=int, nargs='+')
+    ap.add_argument('bugs', metavar='BUGSPEC', nargs='+')
     ap.add_argument('--merged', action='store_true', help='show also merged bugs')
     return ap
 
 def run(options):
-    for bugno in options.bugs:
+    bugs = [
+        deblogic.parse_bugspec(bugspec)
+        for bugspec in options.bugs
+    ]
+    for bugno in bugs:
         run_one(bugno, options=options)
 
 def print_header(_h, _s=None, **kwargs):

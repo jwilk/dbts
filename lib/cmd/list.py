@@ -51,8 +51,13 @@ def run(options):
     debsoap_client = debsoap.Client(session=options.session)
     queries = []
     for selection in options.selections:
-        if selection.isdigit():
-            query = int(selection)
+        bugno = None
+        try:
+            bugno = deblogic.parse_bugspec(selection)
+        except ValueError:
+            pass
+        if bugno is not None:
+            query = bugno
         elif ':' in selection:
             selector, value = selection.split(':', 1)
             selector = selectors[selector]
