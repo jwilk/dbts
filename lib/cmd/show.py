@@ -112,7 +112,7 @@ def run(options):
     for bugspec in options.bugs:
         try:
             bugs += [deblogic.parse_bugspec(bugspec)]
-        except ValueError as exc:
+        except ValueError:
             options.error('{0!r} is not a valid bug number'.format(bugspec))
     for bugno in bugs:
         run_one(bugno, options=options)
