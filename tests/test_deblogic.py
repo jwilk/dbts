@@ -62,11 +62,11 @@ class test_parse_bugspec:
         self.t('mailto:114752@bugs.debian.org', None)
 
     def test_bad_host(self):
-        self.t('http://bugs.debian.net/635572', None)
-        self.t('http://bugs.debian.net/cgi-bin/bugreport.cgi?bug=18408', None)
+        self.t('https://bugs.debian.net/635572', None)
+        self.t('https://bugs.debian.net/cgi-bin/bugreport.cgi?bug=18408', None)
 
     def test_bad_path(self):
-        self.t('http://bugs.debian.org/bugreport.cgi?bug=395923', None)
+        self.t('https://bugs.debian.org/bugreport.cgi?bug=395923', None)
 
     def test_bad_query(self):
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi', None)
