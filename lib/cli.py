@@ -64,6 +64,7 @@ def main():
     session.headers['User-Agent'] = 'dbts (https://github.com/jwilk/dbts)'
     options.session = session
     mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=options.cmd))
+    options.error = ap.error
     with autopager.autopager():
         mod.run(options)
 
