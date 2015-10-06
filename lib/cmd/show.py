@@ -108,10 +108,12 @@ def add_argument_parser(subparsers):
     return ap
 
 def run(options):
-    bugs = [
-        deblogic.parse_bugspec(bugspec)
-        for bugspec in options.bugs
-    ]
+    bugs = []
+    for bugspec in options.bugs:
+        try:
+            bugs += [deblogic.parse_bugspec(bugspec)]
+        except ValueError as exc:
+            options.error('{0!r} is not a valid bug number'.format(bugspec))
     for bugno in bugs:
         run_one(bugno, options=options)
 
