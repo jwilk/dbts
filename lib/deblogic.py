@@ -53,13 +53,14 @@ def parse_bugspec(s):
     if match is not None:
         n = match.group(1)
         return int(n)
-    if url.path == '/cgi-bin/bugreport.cgi':
-        query = urllib.parse.parse_qs(url.query)
-        try:
-            [n] = query['bug']
-        except KeyError:
-            raise ValueError
-        return int(n)
+    if url.path != '/cgi-bin/bugreport.cgi':
+        raise ValueError
+    query = urllib.parse.parse_qs(url.query)
+    try:
+        [n] = query['bug']
+    except KeyError:
+        raise ValueError
+    return int(n)
 
 __all__ = [
     'parse_bugspec',
