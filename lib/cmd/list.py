@@ -45,6 +45,14 @@ def select_sources_for(pkgname):
         for pkg in cache[pkgname].versions
     ]
 
+def select_for_unpacked(path):
+    import debian.deb822 as deb822
+    with open(path + '/debian/control', 'r', encoding='UTF-8') as file:
+        for dctrl in deb822.Deb822.iter_paragraphs(file):
+            srcpkg = dctrl['Source']
+            return [{'src': srcpkg}]
+    raise RuntimeError
+
 def xcmd(*cmdline):
     child = subprocess.Popen(
         cmdline,
@@ -108,7 +116,9 @@ def run(options):
                 os.stat(path)
             except OSError:
                 options.error('{0!r} is not a valid package name'.format(selection))
-            if path.endswith('.deb'):
+            if os.path.isdir(path):
+                queries += select_for_unpacked(path)
+            elif path.endswith('.deb'):
                 queries += select_for_deb(path)
             else:
                 options.error('{0!r} is not a valid package name'.format(selection))
