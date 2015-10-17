@@ -45,13 +45,16 @@ def select_sources_for(pkgname):
         for pkg in cache[pkgname].versions
     ]
 
-def select_for_unpacked(path):
+def select_for_dsc(path):
     import debian.deb822 as deb822
-    with open(path + '/debian/control', 'r', encoding='UTF-8') as file:
+    with open(path, 'r', encoding='UTF-8') as file:
         for dctrl in deb822.Deb822.iter_paragraphs(file):
             srcpkg = dctrl['Source']
             return [{'src': srcpkg}]
     raise RuntimeError
+
+def select_for_unpacked(path):
+    return select_for_dsc(path + '/debian/control')
 
 def xcmd(*cmdline):
     child = subprocess.Popen(
@@ -120,6 +123,8 @@ def run(options):
                 queries += select_for_unpacked(path)
             elif path.endswith('.deb'):
                 queries += select_for_deb(path)
+            elif path.endswith('.dsc'):
+                queries += select_for_dsc(path)
             else:
                 options.error('{0!r} is not a valid package name'.format(selection))
     bugs = debsoap_client.get_bugs(*queries)
