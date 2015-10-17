@@ -62,7 +62,13 @@ def parse_bugspec(s):
         raise ValueError
     return int(n)
 
+def is_package_name(s):
+    # Policy §5.6.1
+    match = re.match(r'\A[a-z][a-z0-9.+-]*\Z', s)
+    return match is not None
+
 __all__ = [
+    'is_package_name',
     'parse_bugspec',
     'rc_severities',
     'wnpp_tags',
