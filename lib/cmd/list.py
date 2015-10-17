@@ -22,6 +22,8 @@
 
 import re
 import functools
+import os
+import subprocess
 
 from lib import colorterm
 from lib import deblogic
@@ -42,6 +44,21 @@ def select_sources_for(pkgname):
         {'src': pkg.source_name}
         for pkg in cache[pkgname].versions
     ]
+
+def xcmd(*cmdline):
+    child = subprocess.Popen(
+        cmdline,
+        stdout=subprocess.PIPE,
+    )
+    (stdout, stderr) = child.communicate()
+    if child.returncode != 0:
+        raise RuntimeError
+    return stdout
+
+def select_for_deb(path):
+    pkg = xcmd('dpkg-deb', '-f', path, 'Package')
+    pkg = pkg.decode('ASCII').strip()
+    return [{'package': pkg}]
 
 selectors = {  # sort -t: -k2
     'commented': 'correspondent',
@@ -83,8 +100,18 @@ def run(options):
                 queries += selector(value)
             else:
                 queries += [{selector: value}]
-        else:
+        elif deblogic.is_package_name(selection):
             queries += [dict(package=selection)]
+        else:
+            path = selection
+            try:
+                os.stat(path)
+            except OSError:
+                options.error('{0!r} is not a valid package name'.format(selection))
+            if path.endswith('.deb'):
+                queries += select_for_deb(path)
+            else:
+                options.error('{0!r} is not a valid package name'.format(selection))
     bugs = debsoap_client.get_bugs(*queries)
     bugs = sorted(bugs, key=(lambda bug: -bug.id))
     for bug in bugs:
