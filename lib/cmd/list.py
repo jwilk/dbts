@@ -20,9 +20,9 @@
 
 'the “list” command'
 
-import re
 import functools
 import os
+import re
 import subprocess
 
 from lib import colorterm
