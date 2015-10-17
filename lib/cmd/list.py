@@ -51,6 +51,8 @@ selectors = {  # sort -t: -k2
     'last': 'newest',
     'newest': 'newest',
     'owner': 'owner',
+    'package': 'package',
+    'pkg': 'package',
     'source': 'src',
     'src': 'src',
     'from': 'submitter',
