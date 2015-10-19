@@ -131,10 +131,10 @@ def print_control_message(html_message):
         ''.join(html_message.xpath('.//text()'))
     )
     match = re.match(
-        '^(.*) '
-        'Request was from (.+) to ([\w-]+@bugs[.]debian[.]org). '
-        '(?:[(]([A-Z][a-z]{2}, [0-9]{2} [A-Z][a-z]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT)[)] )?'
-        'Full text and rfc822 format available[.]$',
+        r'^(.*) '
+        r'Request was from (.+) to ([\w-]+@bugs[.]debian[.]org). '
+        r'(?:[(]([A-Z][a-z]{2}, [0-9]{2} [A-Z][a-z]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT)[)] )?'
+        r'Full text and rfc822 format available[.]$',
         message
     )
     if match is not None:
