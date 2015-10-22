@@ -90,7 +90,7 @@ selectors = {  # sort -t: -k2
 }
 
 def strip_package_prefix(subject, package):
-    regex = r'{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
+    regex = r'\A{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
     return re.sub(regex, '', subject)
 
 def run(options):
