@@ -80,7 +80,10 @@ def extract_maintainers(html):
 
 def extract_attachments(html):
     result = collections.defaultdict(list)
-    for elem in html.xpath('//pre[@class="mime"][not(following-sibling::pre[@class="message"])]/a'):
+    for elem in html.xpath('//pre[@class="mime"]/a'):
+        [nextelem] = elem.xpath('parent::*/following-sibling::*[1]')
+        if nextelem.tag == 'pre' and nextelem.attrib['class'] == 'message':
+            continue
         url = elem.get('href')
         query = urllib.parse.urlparse(url).query
         query = urllib.parse.parse_qs(query)
