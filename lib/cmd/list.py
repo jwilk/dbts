@@ -30,7 +30,8 @@ from lib import deblogic
 from lib import debsoap
 
 def add_argument_parser(subparsers):
-    ap = subparsers.add_parser('list')
+    ap = subparsers.add_parser('list', aliases={'ls'})
+    ap.set_defaults(cmd='list')
     ap.add_argument('selections', metavar='SELECTION', type=str, nargs='+')
     return ap
 
