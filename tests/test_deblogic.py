@@ -20,8 +20,10 @@
 
 from nose.tools import (
     assert_equal,
+    assert_false,
     assert_is_instance,
     assert_raises,
+    assert_true,
 )
 
 from lib import deblogic as M
@@ -72,5 +74,33 @@ class test_parse_bugspec:
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi', None)
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1.8943', None)
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=293727;bug=161662', None)
+
+class test_is_package_name:
+
+    def t(self, s):
+        ok = M.is_package_name(s)
+        assert_true(ok)
+
+    def f(self, s):
+        ok = M.is_package_name(s)
+        assert_false(ok)
+
+    def test_minimum_length(self):
+        self.f('')
+        self.f('a')
+        self.t('an')
+
+    def test_leading_digit(self):
+        self.t('0ad')
+
+    def punctuation(self):
+        self.t('g++')
+        self.t('m-tx')
+        self.t('tk8.4')
+
+    def test_leading_punctuation(self):
+        self.f('+x')
+        self.f('-y')
+        self.f('.z')
 
 # vim:ts=4 sts=4 sw=4 et
