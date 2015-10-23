@@ -36,7 +36,7 @@ def autopager():
     cmdline = os.environ.get('PAGER', 'pager')
     env = None
     if 'LESS' not in os.environ:
-        env = dict(os.environ, LESS='FRX')
+        env = dict(os.environ, LESS='FRXi')
     orig_stdout = sys.stdout
     try:
         pager = ipc.Popen(cmdline, shell=True, stdin=ipc.PIPE, env=env)
