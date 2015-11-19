@@ -144,7 +144,7 @@ def run(options):
         elif package == 'sponsorship-requests':
             if subject.startswith('RFS:'):
                 package = None
-        template = '{n:>7} '
+        template = ''
         source = None
         subject_color = '{t.green}' if bug.done else '{t.bold}'
         if package is not None:
@@ -168,12 +168,14 @@ def run(options):
         else:
             template += '{t.red}(no subject){t.off}'
         colorterm.print(template,
-            n='#{n}'.format(n=bug.id),
             pkg=package,
             src=source,
             subject=subject,
         )
-        template = '        {user}; {date}-00:00'
+        indent = '  '
+        template = indent + '{t.cyan}https://bugs.debian.org/{n}{t.off}'
+        colorterm.print(template, n=bug.id)
+        template = indent + '{user}; {date}-00:00'
         user = bug.submitter
         if package == 'wnpp' and bug.owner is not None:
             user = bug.owner
@@ -193,7 +195,7 @@ def run(options):
                 template += ' '
             template += '{tags}'
         if template:
-            template = '        ' + template
+            template = indent + template
             colorterm.print(template,
                 tags=' '.join('+' + t for t in bug.tags),
                 severity=bug.severity,
@@ -206,7 +208,7 @@ def run(options):
                 template += '; '
             template += 'fixed in {fixed}'
         if template:
-            template = '        ' + template
+            template = indent + template
             colorterm.print(template,
                 found=', '.join(bug.found_versions),
                 fixed=', '.join(bug.fixed_versions),
