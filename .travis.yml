@@ -20,7 +20,7 @@ script:
 - nosetests -v
 - export PAGER=cat
 - python ./dbts show 123456 654321
-- python ./dbts list adequate
+- python ./dbts ls adequate
 - ./private/run-pyflakes
 
 # vim:ts=2 sts=2 sw=2 et

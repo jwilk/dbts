@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-'the “list” command'
+'the “ls” command'
 
 import functools
 import os
@@ -30,8 +30,7 @@ from lib import deblogic
 from lib import debsoap
 
 def add_argument_parser(subparsers):
-    ap = subparsers.add_parser('list', aliases={'ls'})
-    ap.set_defaults(cmd='list')
+    ap = subparsers.add_parser('ls')
     ap.add_argument('selections', metavar='SELECTION', type=str, nargs='+')
     return ap
 
