@@ -34,6 +34,7 @@ rc_severities = {
 wnpp_tags = {
     'O',
     'RFA',
+    'ITA',
     'RFH',
     'ITP',
     'RFP',
