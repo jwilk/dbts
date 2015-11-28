@@ -51,6 +51,8 @@ def print(_s='', **kwargs):
 def _quote_unsafe_char(ch):
     if ch == '\t':
         return '{t.reverse}\t{t.unreverse}'.format(t=_seq)
+    elif ch < ' ' or ch == '\x7F':
+        return '{t.reverse}^{c}{t.unreverse}'.format(t=_seq, c=chr(ord('@') ^ ord(ch)))
     else:
         return '{t.reverse}<U+{u:04X}>{t.unreverse}'.format(t=_seq, u=ord(ch))
 
