@@ -39,7 +39,9 @@ def autopager():
         return
     env = None
     if 'LESS' not in os.environ:
-        env = dict(os.environ, LESS='FRXi')
+        env = dict(env or os.environ, LESS='FRXi')
+    if 'LV' not in os.environ:
+        env = dict(env or os.environ, LV='-c')
     orig_stdout = sys.stdout
     try:
         pager = ipc.Popen(cmdline, shell=True, stdin=ipc.PIPE, env=env)
