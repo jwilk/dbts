@@ -29,7 +29,7 @@ import os
 import appdirs
 import requests
 
-from lib import autopager
+from lib import pager
 
 if int(requests.__version__.split('.')[0]) < 1:
     raise RuntimeError('requests >= 1.0 is required')
@@ -65,7 +65,7 @@ def main():
     options.session = session
     mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=options.cmd))
     options.error = ap.error
-    with autopager.autopager():
+    with pager.autopager():
         mod.run(options)
 
 __all__ = [
