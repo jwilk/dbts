@@ -34,6 +34,9 @@ def autopager():
         yield
         return
     cmdline = os.environ.get('PAGER', 'pager')
+    if cmdline == 'cat':
+        yield
+        return
     env = None
     if 'LESS' not in os.environ:
         env = dict(os.environ, LESS='FRXi')
