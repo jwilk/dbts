@@ -1,4 +1,4 @@
-# Copyright © 2015 Jakub Wilk <jwilk@jwilk.net>
+# Copyright © 2015-2016 Jakub Wilk <jwilk@jwilk.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to deal
@@ -173,7 +173,9 @@ def run(options):
         )
         indent = '  '
         template = indent + '{t.cyan}https://bugs.debian.org/{n}{t.off}'
-        colorterm.print(template, n=bug.id)
+        if bug.forwarded:
+            template += ' -> {t.cyan}{forwarded}{t.off}'
+        colorterm.print(template, n=bug.id, forwarded=bug.forwarded)
         template = indent + '{user}; {date}-00:00'
         user = bug.submitter
         if package == 'wnpp' and bug.owner is not None:
