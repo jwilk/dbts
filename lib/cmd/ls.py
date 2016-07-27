@@ -152,14 +152,14 @@ def run(options):
                 new_subject = strip_package_prefix(subject, source)
                 if subject != new_subject:
                     subject = new_subject
-                    template += '[src:' +  subject_color + '{src}{t.off}] '
+                    template += '[src:' + subject_color + '{src}{t.off}] '
                 else:
                     template += '[src:{src}] '
             else:
                 new_subject = strip_package_prefix(subject, package)
                 if subject != new_subject:
                     subject = new_subject
-                    template += '[' +  subject_color + '{pkg}{t.off}] '
+                    template += '[' + subject_color + '{pkg}{t.off}] '
                 else:
                     template += '[{pkg}] '
         if subject:
