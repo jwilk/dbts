@@ -57,14 +57,7 @@ def select_for_unpacked(path):
     return select_for_dsc(path + '/debian/control')
 
 def xcmd(*cmdline):
-    child = subprocess.Popen(
-        cmdline,
-        stdout=subprocess.PIPE,
-    )
-    (stdout, stderr) = child.communicate()
-    if child.returncode != 0:
-        raise RuntimeError
-    return stdout
+    return subprocess.check_output(cmdline)
 
 def select_for_deb(path):
     pkg = xcmd('dpkg-deb', '-f', path, 'Package')
