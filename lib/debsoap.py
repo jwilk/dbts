@@ -136,6 +136,7 @@ class BugLog(object):
 
     def __iter__(self):
         for n, message in sorted(self._messages.items()):
+            del n
             yield message
 
     def __getitem__(self, n):
