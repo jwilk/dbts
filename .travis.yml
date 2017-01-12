@@ -7,8 +7,6 @@ python:
 - "3.7-dev"
 install:
 - pip install --upgrade pip
-- pip install appdirs
-- pip install requests
 - pip install --verbose lxml
 - pip install pyflakes
 cache:
