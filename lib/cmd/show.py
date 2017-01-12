@@ -70,8 +70,8 @@ def extract_bug_version_graph(html, *, options):
     [version_url] = version_urls
     version_url += ';dot=1'
     response = options.session.get(version_url)
-    response.raise_for_status()
-    return dotparser.parse(response.text)
+    response = response.decode('ASCII')
+    return dotparser.parse(response)
 
 def extract_maintainers(html):
     for elem in html.xpath('//div[@class="pkginfo"]//a'):
@@ -183,9 +183,8 @@ def run_one(bugno, *, options):
     print_header('Location', '{t.cyan}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
-    response = session.get(url)
-    response.raise_for_status()
-    html = lxml.html.fromstring(response.text)
+    data = session.get(url)
+    html = lxml.html.fromstring(data)
     html.make_links_absolute(base_url=url)
     debsoap_client = debsoap.Client(session=session)
     status = debsoap_client.get_status(bugno)

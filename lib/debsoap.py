@@ -204,13 +204,13 @@ class Client(object):
         data = data.encode('UTF-8')
         headers = {
             'Content-Type': 'application/soap+xml; charset=UTF-8',
+            'Content-Length': str(len(data)),
         }
         response = self._session.post(url='https://bugs.debian.org/cgi-bin/soap.cgi',
              headers=headers,
              data=data,
         )
-        response.raise_for_status()
-        tree = lxml.etree.fromstring(response.content)
+        tree = lxml.etree.fromstring(response)
         [result] = tree.find('{http://schemas.xmlsoap.org/soap/envelope/}Body')
         return result
 

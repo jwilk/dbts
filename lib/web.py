@@ -1,4 +1,4 @@
-# Copyright © 2015 Jakub Wilk <jwilk@jwilk.net>
+# Copyright © 2017 Jakub Wilk <jwilk@jwilk.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to deal
@@ -18,33 +18,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-'''
-command-line interface
-'''
+import gzip
+import urllib.request
 
-import argparse
-import importlib
+class UserAgent(object):
 
-from lib import pager
-from lib import web
+    default_headers = {
+        'User-Agent': 'dbts (https://github.com/jwilk/dbts)',
+        'Accept-Encoding': 'gzip',
+    }
 
-def main():
-    ap = argparse.ArgumentParser()
-    sp = ap.add_subparsers()
-    sp.dest = 'cmd'  # https://bugs.python.org/issue9253
-    sp.required = True
-    for cmd in ['ls', 'show']:
-        mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=cmd))
-        mod.add_argument_parser(sp)
-    options = ap.parse_args()
-    options.session = web.UserAgent()
-    mod = importlib.import_module('lib.cmd.{cmd}'.format(cmd=options.cmd))
-    options.error = ap.error
-    with pager.autopager():
-        mod.run(options)
+    def request(self, url, data=None, headers=(), method=None):
+        new_headers = dict(self.default_headers)
+        new_headers.update(headers)
+        request = urllib.request.Request(url, headers=new_headers, data=data)
+        with urllib.request.urlopen(request, cadefault=True) as fp:
+            content_encoding = fp.getheader('Content-Encoding', 'identity')
+            data = fp.read()
+        if content_encoding == 'gzip':
+            return gzip.decompress(data)
+        elif content_encoding == 'identity':
+            return data
 
-__all__ = [
-    'main',
-]
+    def get(self, url, headers=()):
+        return self.request(url, headers=headers, method='GET')
+
+    def post(self, url, data=None, headers=()):
+        return self.request(url, data=data, headers=headers, method='POST')
+
+__all__ = ['UserAgent']
 
 # vim:ts=4 sts=4 sw=4 et
