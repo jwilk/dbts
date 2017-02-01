@@ -10,9 +10,7 @@ install:
 - pip install --verbose lxml
 - pip install pyflakes
 - pip install docutils
-cache:
-  directories:
-  - $HOME/.cache
+cache: pip
 script:
 - nosetests -v
 - export PAGER=cat
