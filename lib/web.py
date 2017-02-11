@@ -39,6 +39,8 @@ class UserAgent(object):
             return gzip.decompress(data)
         elif content_encoding == 'identity':
             return data
+        else:
+            raise RuntimeError('unexpected Content-Encoding: {0!r}'.format(content_encoding))
 
     def get(self, url, headers=()):
         return self.request(url, headers=headers, method='GET')
