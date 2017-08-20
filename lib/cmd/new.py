@@ -115,6 +115,7 @@ def run(options):
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
     os.execlp('mutt', 'mutt',
         '-e', 'my_hdr X-Debbugs-No-Ack: please',
+        '-e', 'my_hdr X-Debbugs-Cc: $from',
         url
     )
 
