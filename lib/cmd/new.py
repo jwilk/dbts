@@ -43,7 +43,10 @@ def flatten_depends(deps):
             yield d
 
 def get_version_info(packages):
-    raw_info = xcmd('dpkg-query', '-Wf', '${db:Status-Abbrev}\t${Package}\t${Version}\n', *set(packages))
+    try:
+        raw_info = xcmd('dpkg-query', '-Wf', '${db:Status-Abbrev}\t${Package}\t${Version}\n', *set(packages))
+    except subprocess.CalledProcessError as exc:
+        raw_info = exc.output
     raw_info = raw_info.decode('ASCII')
     info = {}
     for line in raw_info.splitlines():
@@ -113,7 +116,12 @@ def run(options):
             deptable = Table()
             for dep in deps:
                 if dep not in seen:
-                    (status, version) = version_info[dep]
+                    try:
+                        (status, version) = version_info[dep]
+                    except KeyError:
+                        status = 'un'
+                        version = None
+                    version = version or '<none>'
                     deptable.add(status, dep, version)
                     seen.add(dep)
             if deptable:
