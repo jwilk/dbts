@@ -39,8 +39,10 @@ def flatten_depends(deps):
     deps = re.sub(r'[(][^)]+[)]', '', deps)
     for d in re.split(r'\s*[,|]\s*', deps):
         d = d.strip()
-        if d:
-            yield d
+        if not d:
+            continue
+        d = re.sub(':any$', '', d)
+        yield d
 
 def get_version_info(packages):
     try:
