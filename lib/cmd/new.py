@@ -81,35 +81,45 @@ def urlencode(**data):
     return urllib.parse.urlencode(data, quote_via=urllib.parse.quote)
 
 def run(options):
-    info = xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', options.package)
-    info = info.decode('ASCII')
-    [package, architecture, version, *dep_lists] = info.splitlines()
-    dep_lists = [list(flatten_depends(d)) for d in dep_lists]
-    dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
-    dverbs = ['depends on', 'recommends', 'suggests']
+    package = options.package
+    try:
+        info = xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', package)
+    except subprocess.CalledProcessError:
+        version = None
+    else:
+        info = info.decode('ASCII')
+        [package, architecture, version, *dep_lists] = info.splitlines()
+        if version:
+            dep_lists = [list(flatten_depends(d)) for d in dep_lists]
+            dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
+            dverbs = ['depends on', 'recommends', 'suggests']
+        else:
+            del dep_lists
     body = []
     def a(s=''):
         body.append(s)
     a('Package: {pkg}'.format(pkg=package))
-    a('Version: {ver}'.format(ver=version))
+    if version:
+        a('Version: {ver}'.format(ver=version))
     a()
     a()
-    a('-- System Information:')
-    a('Architecture: {arch}'.format(arch=architecture))
-    a()
-    seen = set()
-    version_info = get_version_info(itertools.chain(*dep_lists))
-    for deps, dverb in zip(dep_lists, dverbs):
-        deptable = Table()
-        for dep in deps:
-            if dep not in seen:
-                (status, version) = version_info[dep]
-                deptable.add(status, dep, version)
-                seen.add(dep)
-        if deptable:
-            a('Versions of packages {pkg} {verb}:'.format(pkg=package, verb=dverb))
-            a(str(deptable))
-            a()
+    if version:
+        a('-- System Information:')
+        a('Architecture: {arch}'.format(arch=architecture))
+        a()
+        seen = set()
+        version_info = get_version_info(itertools.chain(*dep_lists))
+        for deps, dverb in zip(dep_lists, dverbs):
+            deptable = Table()
+            for dep in deps:
+                if dep not in seen:
+                    (status, version) = version_info[dep]
+                    deptable.add(status, dep, version)
+                    seen.add(dep)
+            if deptable:
+                a('Versions of packages {pkg} {verb}:'.format(pkg=package, verb=dverb))
+                a(str(deptable))
+                a()
     body = '\n'.join(body)
     subject = '{pkg}:'.format(pkg=package)
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
