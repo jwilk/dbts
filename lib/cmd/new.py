@@ -73,6 +73,7 @@ class Table(object):
                 s.ljust(widths[i])
                 for i, s in enumerate(item)
             )
+            line = line.rstrip()
             lines += [line]
         return '\n'.join(lines)
 
