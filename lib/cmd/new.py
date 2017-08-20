@@ -43,11 +43,11 @@ def flatten_depends(deps):
             yield d
 
 def get_version_info(packages):
-    raw_info = xcmd('dpkg-query', '-Wf', '${db:Status-Abbrev} ${Package} ${Version}\n', *set(packages))
+    raw_info = xcmd('dpkg-query', '-Wf', '${db:Status-Abbrev}\t${Package}\t${Version}\n', *set(packages))
     raw_info = raw_info.decode('ASCII')
     info = {}
     for line in raw_info.splitlines():
-        status, package, version = line.split()
+        status, package, version = line.split('\t')
         info[package] = (status, version)
     return info
 
