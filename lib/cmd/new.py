@@ -113,7 +113,10 @@ def run(options):
     body = '\n'.join(body)
     subject = '{pkg}:'.format(pkg=package)
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
-    os.execlp('mutt', 'mutt', url)
+    os.execlp('mutt', 'mutt',
+        '-e', 'my_hdr X-Debbugs-No-Ack: please',
+        url
+    )
 
 __all__ = [
     'add_argument_parser',
