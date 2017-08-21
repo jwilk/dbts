@@ -69,23 +69,37 @@ def urlencode(**data):
 
 def run(options):
     package = options.package
-    try:
-        info = utils.xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', package)
-    except subprocess.CalledProcessError:
-        version = None
+    source = None
+    version = None
+    if utils.looks_like_path(package):
+        raise NotImplementedError  # FIXME
+    elif package.startswith(('src:', 'source:')):
+        (prefix, source) = package.split(':', 1)
+        package = None
+    elif package.endswith(':source'):
+        (source, suffix) = package.rsplit(':', 1)
+        package = None
     else:
-        info = info.decode('ASCII')
-        [package, architecture, version, *dep_lists] = info.splitlines()
-        if version:
-            dep_lists = [list(flatten_depends(d)) for d in dep_lists]
-            dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
-            dverbs = ['depends on', 'recommends', 'suggests']
+        try:
+            info = utils.xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', package)
+        except subprocess.CalledProcessError:
+            pass
         else:
-            del dep_lists
+            info = info.decode('ASCII')
+            [package, architecture, version, *dep_lists] = info.splitlines()
+            if version:
+                dep_lists = [list(flatten_depends(d)) for d in dep_lists]
+                dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
+                dverbs = ['depends on', 'recommends', 'suggests']
+            else:
+                del dep_lists
     body = []
     def a(s=''):
         body.append(s)
-    a('Package: {pkg}'.format(pkg=package))
+    if package:
+        a('Package: {pkg}'.format(pkg=package))
+    if source:
+        a('Source: {src}'.format(src=source))
     if version:
         a('Version: {ver}'.format(ver=version))
     a()
@@ -113,7 +127,7 @@ def run(options):
                 a(str(deptable))
                 a()
     body = '\n'.join(body)
-    subject = '{pkg}:'.format(pkg=package)
+    subject = '{pkg}:'.format(pkg=(package or source))
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
     os.execlp('mutt', 'mutt',
         '-e', 'my_hdr X-Debbugs-No-Ack: please',
