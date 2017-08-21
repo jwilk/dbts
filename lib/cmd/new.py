@@ -44,7 +44,7 @@ class Table(object):
         self._items = []
 
     def add(self, *item):
-        self._items += [item]
+        self._items += [tuple(s.rstrip() for s in item)]
 
     def __len__(self):
         return len(self._items)
