@@ -34,7 +34,7 @@ def select_for_dsc(path):
         for dctrl in deb822.Deb822.iter_paragraphs(file):
             srcpkg = dctrl['Source']
             return [{'src': srcpkg}]
-    raise RuntimeError
+    raise RuntimeError  # FIXME
 
 def select_for_unpacked(path):
     return select_for_dsc(path + '/debian/control')
