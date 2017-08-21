@@ -97,7 +97,7 @@ def run(options):
             pass
         if bugno is not None:
             queries += [bugno]
-        elif ':' in selection:
+        elif ':' in selection and not selection.startswith(('./', '../', '/')):
             selector, value = selection.split(':', 1)
             selector = selectors[selector]
             if callable(selector):
