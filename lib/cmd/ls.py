@@ -23,11 +23,11 @@
 import functools
 import os
 import re
-import subprocess
 
 from lib import colorterm
 from lib import deblogic
 from lib import debsoap
+from lib import utils
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('ls')
@@ -56,11 +56,8 @@ def select_for_dsc(path):
 def select_for_unpacked(path):
     return select_for_dsc(path + '/debian/control')
 
-def xcmd(*cmdline):
-    return subprocess.check_output(cmdline)
-
 def select_for_deb(path):
-    pkg = xcmd('dpkg-deb', '-f', path, 'Package')
+    pkg = utils.xcmd('dpkg-deb', '-f', path, 'Package')
     pkg = pkg.decode('ASCII').strip()
     return [{'package': pkg}]
 
@@ -86,12 +83,6 @@ def strip_package_prefix(subject, package):
     regex = r'\A{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
     return re.sub(regex, '', subject)
 
-def looks_like_path(s):
-    return (
-        s == '.' or
-        s.startswith(('./', '../', '/'))
-    )
-
 def run(options):
     debsoap_client = debsoap.Client(session=options.session)
     queries = []
@@ -103,7 +94,7 @@ def run(options):
             pass
         if bugno is not None:
             queries += [bugno]
-        elif looks_like_path(selection):
+        elif utils.looks_like_path(selection):
             path = selection
             try:
                 os.stat(path)

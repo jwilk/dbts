@@ -27,13 +27,12 @@ import re
 import subprocess
 import urllib.parse
 
+from lib import utils
+
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('new')
     ap.add_argument('package', metavar='PACKAGE', type=str)
     return ap
-
-def xcmd(*cmdline):
-    return subprocess.check_output(cmdline)
 
 def flatten_depends(deps):
     deps = re.sub(r'[(][^)]+[)]', '', deps)
@@ -46,7 +45,7 @@ def flatten_depends(deps):
 
 def get_version_info(packages):
     try:
-        raw_info = xcmd('dpkg-query', '-Wf', '${db:Status-Abbrev}\t${Package}\t${Version}\n', *set(packages))
+        raw_info = utils.xcmd('dpkg-query', '-Wf', '${db:Status-Abbrev}\t${Package}\t${Version}\n', *set(packages))
     except subprocess.CalledProcessError as exc:
         raw_info = exc.output
     raw_info = raw_info.decode('ASCII')
@@ -88,7 +87,7 @@ def urlencode(**data):
 def run(options):
     package = options.package
     try:
-        info = xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', package)
+        info = utils.xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', package)
     except subprocess.CalledProcessError:
         version = None
     else:
