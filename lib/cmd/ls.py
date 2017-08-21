@@ -99,7 +99,10 @@ def run(options):
             queries += [bugno]
         elif ':' in selection and not selection.startswith(('./', '../', '/')):
             selector, value = selection.split(':', 1)
-            selector = selectors[selector]
+            try:
+                selector = selectors[selector]
+            except KeyError:
+                options.error('{0!r} is not a valid selector'.format(selector))
             if callable(selector):
                 queries += selector(value)
             else:
