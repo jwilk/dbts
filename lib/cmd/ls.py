@@ -86,6 +86,12 @@ def strip_package_prefix(subject, package):
     regex = r'\A{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
     return re.sub(regex, '', subject)
 
+def looks_like_path(s):
+    return (
+        s == '.' or
+        s.startswith(('./', '../', '/'))
+    )
+
 def run(options):
     debsoap_client = debsoap.Client(session=options.session)
     queries = []
@@ -97,7 +103,21 @@ def run(options):
             pass
         if bugno is not None:
             queries += [bugno]
-        elif ':' in selection and not selection.startswith(('./', '../', '/')):
+        elif looks_like_path(selection):
+            path = selection
+            try:
+                os.stat(path)
+            except OSError:
+                options.error('{0!r} is not a package'.format(path))
+            if os.path.isdir(path + '/debian'):
+                queries += select_for_unpacked(path)
+            elif path.endswith('.deb'):
+                queries += select_for_deb(path)
+            elif path.endswith('.dsc'):
+                queries += select_for_dsc(path)
+            else:
+                options.error('{0!r} is not a package'.format(path))
+        elif ':' in selection:
             selector, value = selection.split(':', 1)
             try:
                 selector = selectors[selector]
@@ -110,19 +130,7 @@ def run(options):
         elif deblogic.is_package_name(selection):
             queries += [dict(package=selection)]
         else:
-            path = selection
-            try:
-                os.stat(path)
-            except OSError:
-                options.error('{0!r} is not a valid package name'.format(selection))
-            if os.path.isdir(path):
-                queries += select_for_unpacked(path)
-            elif path.endswith('.deb'):
-                queries += select_for_deb(path)
-            elif path.endswith('.dsc'):
-                queries += select_for_dsc(path)
-            else:
-                options.error('{0!r} is not a valid package name'.format(selection))
+            options.error('{0!r} is not a valid package name'.format(selection))
     bugs = debsoap_client.get_bugs(*queries)
     bugs = sorted(bugs, key=(lambda bug: -bug.id))
     for bug in bugs:
