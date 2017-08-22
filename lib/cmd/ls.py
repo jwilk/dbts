@@ -85,10 +85,10 @@ def run(options):
                 options.error('{0!r} is not a package'.format(path))
             if os.path.isdir(path + '/debian'):
                 queries += select_for_unpacked(path)
-            elif path.endswith('.deb'):
-                queries += select_for_deb(path)
             elif path.endswith('.dsc'):
                 queries += select_for_dsc(path)
+            elif path.endswith('.deb'):
+                queries += select_for_deb(path)
             else:
                 options.error('{0!r} is not a package'.format(path))
         elif ':' in selection:
