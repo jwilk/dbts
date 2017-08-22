@@ -10,6 +10,7 @@ import re
 import subprocess
 import urllib.parse
 
+from lib import deblogic
 from lib import utils
 
 def add_argument_parser(subparsers):
@@ -67,12 +68,84 @@ class Table(object):
 def urlencode(**data):
     return urllib.parse.urlencode(data, quote_via=urllib.parse.quote)
 
+def pkginfo_for_dsc(path):
+    source = None
+    version = None
+    with open(path, 'r', encoding='UTF-8') as file:
+        for line in file:
+            match = re.match(r'^(?:(source)|(version)):\s*(\S+)$', line, re.IGNORECASE)
+            if not match:
+                continue
+            if match.group(1) is not None:
+                source = match.group(3)
+            else:
+                version = match.group(3)
+            if source and version:
+                break
+    if source and version:
+        if not deblogic.is_package_name(source):
+            raise ValueError
+        if not deblogic.is_package_version(version):
+            raise ValueError
+        return (source, version)
+    else:
+        raise ValueError
+
+def pkginfo_for_unpacked(path):
+    with open(path + '/debian/changelog', 'r', encoding='UTF-8') as file:
+        for line in file:
+            break
+    match = re.match('^(\S+) [(]([^)]+)[)]', line)
+    if match is None:
+        raise ValueError
+    (source, version) = match.groups()
+    if not deblogic.is_package_name(source):
+        raise ValueError
+    if not deblogic.is_package_version(version):
+        raise ValueError
+    return (source, version)
+
+def pkginfo_for_deb(path):
+    info = utils.xcmd('dpkg-deb', '-f', path, 'Package', 'Version', 'Architecture')
+    info = info.decode('UTF-8')
+    match = re.match('\A'
+        'Package:\s*(\S+)\n'
+        'Version:\s*(\S+)\n'
+        'Architecture:\s*(\S+)\n'
+        '\Z', info
+    )
+    if match is None:
+        raise ValueError
+    (package, version, architecture) = match.groups()
+    if not deblogic.is_package_name(package):
+        raise ValueError
+    if not deblogic.is_package_version(version):
+        raise ValueError
+    if not deblogic.is_architecture(architecture):
+        raise ValueError
+    return (package, version, architecture)
+
 def run(options):
     package = options.package
     source = None
     version = None
+    architecture = None
+    installed = False
     if utils.looks_like_path(package):
-        raise NotImplementedError  # FIXME
+        path = package
+        package = None
+        try:
+            os.stat(path)
+        except OSError:
+            options.error('{0!r} is not a package'.format(path))
+        if os.path.isdir(path + '/debian'):
+            (source, version) = pkginfo_for_unpacked(path)
+        elif path.endswith('.dsc'):
+            (source, version) = pkginfo_for_dsc(path)
+        elif path.endswith('.deb'):
+            (package, version, architecture) = pkginfo_for_deb(path)
+        else:
+            options.error('{0!r} is not a package'.format(path))
     elif package.startswith(('src:', 'source:')):
         (prefix, source) = package.split(':', 1)
         package = None
@@ -91,6 +164,7 @@ def run(options):
                 dep_lists = [list(flatten_depends(d)) for d in dep_lists]
                 dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
                 dverbs = ['depends on', 'recommends', 'suggests']
+                installed = True
             else:
                 del dep_lists
     body = []
@@ -104,10 +178,11 @@ def run(options):
         a('Version: {ver}'.format(ver=version))
     a()
     a()
-    if version:
+    if installed or architecture:
         a('-- System Information:')
         a('Architecture: {arch}'.format(arch=architecture))
         a()
+    if installed:
         seen = set()
         version_info = get_version_info(itertools.chain(*dep_lists))
         for deps, dverb in zip(dep_lists, dverbs):
