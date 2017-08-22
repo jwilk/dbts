@@ -51,8 +51,14 @@ def is_package_name(s):
     match = re.match(r'\A[a-z0-9][a-z0-9.+-]+\Z', s)
     return match is not None
 
+def is_package_version(s):
+    # Policy §5.6.12
+    match = re.match(r'\A(?:[0-9]+:)?[0-9.~+-]+\Z', s)
+    return match is not None
+
 __all__ = [
     'is_package_name',
+    'is_package_version',
     'parse_bugspec',
     'rc_severities',
     'wnpp_tags',
