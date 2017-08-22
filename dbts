@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# encoding=UTF-8
 
 # Copyright © 2015-2017 Jakub Wilk <jwilk@jwilk.net>
 # SPDX-License-Identifier: MIT
@@ -6,6 +7,8 @@
 import sys
 
 from lib import cli
+
+lambda: (yield from 0)  # Python >= 3.3 is required
 
 def require_python(*version):
     if sys.version_info < version:
