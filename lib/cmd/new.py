@@ -15,6 +15,7 @@ from lib import utils
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('new')
+    ap.add_argument('--attach', metavar='FILE', nargs='+')
     ap.add_argument('package', metavar='PACKAGE', type=str)
     return ap
 
@@ -204,11 +205,17 @@ def run(options):
     body = '\n'.join(body)
     subject = '{pkg}:'.format(pkg=(package or source))
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
-    os.execlp('mutt', 'mutt',
+    cmdline = ['mutt',
         '-e', 'my_hdr X-Debbugs-No-Ack: please',
         '-e', 'my_hdr X-Debbugs-Cc: $from',
-        url
-    )
+    ]
+    if options.attach:
+        print(repr(options.attach))
+        cmdline += ['-a']
+        cmdline += options.attach
+    cmdline += ['--', url]
+    print(repr(cmdline))
+    os.execvp(cmdline[0], cmdline)
 
 __all__ = [
     'add_argument_parser',
