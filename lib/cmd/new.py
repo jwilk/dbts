@@ -96,7 +96,7 @@ def pkginfo_for_unpacked(path):
     with open(path + '/debian/changelog', 'r', encoding='UTF-8') as file:
         for line in file:
             break
-    match = re.match('^(\S+) [(]([^)]+)[)]', line)
+    match = re.match(r'^(\S+) [(]([^)]+)[)]', line)
     if match is None:
         raise ValueError
     (source, version) = match.groups()
@@ -109,11 +109,11 @@ def pkginfo_for_unpacked(path):
 def pkginfo_for_deb(path):
     info = utils.xcmd('dpkg-deb', '-f', path, 'Package', 'Version', 'Architecture')
     info = info.decode('UTF-8')
-    match = re.match('\A'
-        'Package:\s*(\S+)\n'
-        'Version:\s*(\S+)\n'
-        'Architecture:\s*(\S+)\n'
-        '\Z', info
+    match = re.match(r'\A'
+        r'Package:\s*(\S+)\n'
+        r'Version:\s*(\S+)\n'
+        r'Architecture:\s*(\S+)\n'
+        r'\Z', info
     )
     if match is None:
         raise ValueError
