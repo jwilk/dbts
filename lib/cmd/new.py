@@ -126,6 +126,11 @@ def pkginfo_for_deb(path):
         raise ValueError
     return (package, version, architecture)
 
+def dpkg_get_architecture():
+    info = utils.xcmd('dpkg', '--print-architecture')
+    info = info.decode('ASCII')
+    return info.rstrip()
+
 def run(options):
     package = options.package
     source = None
@@ -181,6 +186,8 @@ def run(options):
     a()
     if installed or architecture:
         a('-- System Information:')
+        if installed and architecture == 'all':
+            architecture = dpkg_get_architecture()
         a('Architecture: {arch}'.format(arch=architecture))
         a()
     if installed:
