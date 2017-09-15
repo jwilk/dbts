@@ -10,7 +10,7 @@ Prerequisites
 * Python ≥ 3.3
 
 * lxml_
-  
+
 .. _lxml:
    https://pypi.python.org/pypi/lxml
 
