@@ -57,7 +57,7 @@ def is_package_name(s):
 
 def is_package_version(s):
     # Policy §5.6.12
-    match = re.match(r'\A(?:[0-9]+:)?[0-9.~+-]+\Z', s)
+    match = re.match(r'\A(?:[0-9]+:)?[a-z0-9.~+-]+\Z', s)
     return match is not None
 
 __all__ = [
