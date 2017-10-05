@@ -13,10 +13,10 @@ import urllib.parse
 import lxml.html
 
 from lib import colorterm
-from lib import dotparser
-from lib import indent
 from lib import deblogic
 from lib import debsoap
+from lib import dotparser
+from lib import indent
 
 def print_version_graph(graph, *, ilevel=0):
     vcolors = dict(
