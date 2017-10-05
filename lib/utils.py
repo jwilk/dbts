@@ -6,12 +6,16 @@ various utilities
 '''
 
 import subprocess
+import signal
 
 def looks_like_path(s):
     return (
         s == '.' or
         s.startswith(('./', '../', '/'))
     )
+
+def reset_SIGPIPE():
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 def xcmd(*cmdline):
     return subprocess.check_output(cmdline)
