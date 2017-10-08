@@ -221,7 +221,6 @@ def run(options):
         cmdline += ['-a']
         cmdline += options.attach
     cmdline += ['--', url]
-    print(repr(cmdline))
     os.execvp(cmdline[0], cmdline)
 
 __all__ = [
