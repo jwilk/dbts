@@ -160,12 +160,15 @@ def run(options):
         package = None
     else:
         try:
-            info = utils.xcmd('dpkg-query', '-Wf', '${Package}\n${Architecture}\n${Version}\n${Pre-Depends}\n${Depends}\n${Recommends}\n${Suggests}\n', package)
+            info = utils.xcmd('dpkg-query', '-Wf', '${Package}\x1F${Architecture}\x1F${Version}\x1F${Pre-Depends}\x1F${Depends}\x1F${Recommends}\x1F${Suggests}\n', package)
         except subprocess.CalledProcessError:
             pass
         else:
             info = info.decode('ASCII')
-            [package, architecture, version, *dep_lists] = info.splitlines()
+            info = info.splitlines()
+            if len(info) != 1:
+                options.error('ambiguous package name: {0!r}'.format(package))
+            [package, architecture, version, *dep_lists] = info[0].split('\x1F')
             if version:
                 dep_lists = [list(flatten_depends(d)) for d in dep_lists]
                 dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
