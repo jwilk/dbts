@@ -15,6 +15,7 @@ from lib import utils
 
 def add_argument_parser(subparsers):
     ap = subparsers.add_parser('new')
+    ap.add_argument('-s', '--severity', metavar='SEVERITY', choices=deblogic.severities)
     ap.add_argument('--attach', metavar='FILE', nargs='+')
     ap.add_argument('package', metavar='PACKAGE', type=str)
     return ap
@@ -185,6 +186,8 @@ def run(options):
         a('Source: {src}'.format(src=source))
     if version:
         a('Version: {ver}'.format(ver=version))
+    if options.severity is not None:
+        a('Severity: {sev}'.format(sev=options.severity))
     a()
     a()
     if installed or architecture:
