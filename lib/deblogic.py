@@ -8,11 +8,18 @@ Debian constants, etc.
 import re
 import urllib.parse
 
-rc_severities = {
+rc_severities = (
     'serious',
     'grave',
     'critical',
-}
+)
+
+severities = (
+    'wishlist',
+    'minor',
+    'normal',
+    'important',
+) + rc_severities
 
 wnpp_tags = {
     'O',
@@ -66,6 +73,7 @@ __all__ = [
     'is_package_version',
     'parse_bugspec',
     'rc_severities',
+    'severities',
     'wnpp_tags',
 ]
 
