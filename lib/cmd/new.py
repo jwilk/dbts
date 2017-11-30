@@ -218,7 +218,7 @@ def run(options):
     body = '\n'.join(body)
     subject = '{pkg}:'.format(pkg=(package or source))
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
-    cmdline = ['mutt',
+    cmdline = ['neomutt',
         '-e', 'my_hdr X-Debbugs-No-Ack: please',
         '-e', 'my_hdr X-Debbugs-Cc: $from',
     ]
