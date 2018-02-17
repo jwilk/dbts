@@ -21,8 +21,8 @@ script:
 - export PAGER=cat
 - python dbts show 123456 654321
 - python dbts ls adequate
-- private/run-pydiatra
-- private/run-pyflakes
+- python3 -m pydiatra .
+- python3 -m pyflakes .
 - private/check-rst
 
 # vim:ts=2 sts=2 sw=2 et
