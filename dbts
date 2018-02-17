@@ -4,8 +4,6 @@
 # Copyright © 2015-2018 Jakub Wilk <jwilk@jwilk.net>
 # SPDX-License-Identifier: MIT
 
-import sys
-
 from lib import cli
 
 lambda: (yield from 0)  # Python >= 3.3 is required
