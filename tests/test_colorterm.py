@@ -21,7 +21,7 @@ def with_stdout(encoding):
 def test_control_characters():
     def t(s, x):
         r = M.format('{s}', s=s)
-        assert_equal(r, '\x1b[7m' + x + '\x1b[27m')
+        assert_equal(r, '\x1B[7m' + x + '\x1B[27m')
     t('\x00', '^@')
     t('\x01', '^A')
     t('\x02', '^B')
@@ -95,7 +95,7 @@ def test_escape_encoding_error():
         if x is None:
             assert_equal(r, s)
         else:
-            assert_equal(r, '\x1b[7m' + x + '\x1b[27m')
+            assert_equal(r, '\x1B[7m' + x + '\x1B[27m')
     t('A')
     t('Á', '<U+00C1>')
 

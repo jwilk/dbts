@@ -17,16 +17,16 @@ except (AttributeError, OSError):
     _terminal_width = 80
 
 class _seq:
-    black = '\x1b[30m'
-    red = '\x1b[31m'
-    green = '\x1b[32m'
-    yellow = '\x1b[33m'
-    blue = '\x1b[34m'
-    cyan = '\x1b[36m'
-    bold = '\x1b[1m'
-    off = '\x1b[0m'
-    reverse = '\x1b[7m'
-    unreverse = '\x1b[27m'
+    black = '\x1B[30m'
+    red = '\x1B[31m'
+    green = '\x1B[32m'
+    yellow = '\x1B[33m'
+    blue = '\x1B[34m'
+    cyan = '\x1B[36m'
+    bold = '\x1B[1m'
+    off = '\x1B[0m'
+    reverse = '\x1B[7m'
+    unreverse = '\x1B[27m'
 
 def print(_s='', **kwargs):
     builtins.print(format(_s, **kwargs))
