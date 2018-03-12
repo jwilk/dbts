@@ -16,10 +16,10 @@ install:
 - pip install docutils
 cache: pip
 script:
-- nosetests -v
+- python3 -m nose -v
 - export PAGER=cat
-- python dbts show 123456 654321
-- python dbts ls adequate
+- python3 dbts show 123456 654321
+- python3 dbts ls adequate
 - python3 -m pydiatra .
 - python3 -m pyflakes .
 - private/check-rst
