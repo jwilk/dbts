@@ -12,6 +12,6 @@ Prerequisites
 * lxml_
 
 .. _lxml:
-   https://pypi.python.org/pypi/lxml
+   https://pypi.org/project/lxml/
 
 .. vim:ft=rst ts=3 sts=3 sw=3 et
