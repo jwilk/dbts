@@ -16,7 +16,7 @@ before_install:
 install:
 - pip install --verbose lxml
 - pip install pydiatra $pyflakes
-- pip install docutils
+- pip install restructuredtext-lint
 cache: pip
 script:
 - python3 -m nose -v
@@ -25,6 +25,6 @@ script:
 - ./dbts ls adequate
 - python3 -m pydiatra .
 - python3 -m pyflakes .
-- private/check-rst
+- restructuredtext-lint --encoding=UTF-8 README
 
 # vim:ts=2 sts=2 sw=2 et
