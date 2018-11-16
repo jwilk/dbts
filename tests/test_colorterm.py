@@ -1,8 +1,8 @@
 # Copyright © 2015 Jakub Wilk <jwilk@jwilk.net>
 # SPDX-License-Identifier: MIT
 
-import mock
 import io
+import unittest.mock
 
 from nose.tools import (
     assert_equal,
@@ -15,7 +15,7 @@ def with_stdout(encoding):
         io.StringIO(),
         encoding=encoding,
     )
-    return mock.patch('sys.stdout', stdout)
+    return unittest.mock.patch('sys.stdout', stdout)
 
 @with_stdout('UTF-8')
 def test_control_characters():
