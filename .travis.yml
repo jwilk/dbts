@@ -11,9 +11,9 @@ before_install:
 - pyflakes=pyflakes
 - if [[ $TRAVIS_PYTHON_VERSION = 3.3 ]]; then pyflakes='pyflakes<2'; fi
 install:
-- pip install --verbose lxml
-- pip install pydiatra $pyflakes
-- pip install restructuredtext-lint
+- python3 -m pip install --verbose lxml
+- python3 -m pip install pydiatra $pyflakes
+- python3 -m pip install restructuredtext-lint
 cache: pip
 script:
 - python3 -m nose -v
