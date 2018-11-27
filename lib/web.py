@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import gzip
+import sys
 import urllib.request
 
 class UserAgent(object):
@@ -15,7 +16,10 @@ class UserAgent(object):
         new_headers = dict(self.default_headers)
         new_headers.update(headers)
         request = urllib.request.Request(url, headers=new_headers, data=data)
-        with urllib.request.urlopen(request, cadefault=True) as fp:
+        ca_options = {}
+        if sys.version_info < (3, 4, 3):
+            ca_options.update(cadefault=True)
+        with urllib.request.urlopen(request, **ca_options) as fp:
             content_encoding = fp.getheader('Content-Encoding', 'identity')
             data = fp.read()
         if content_encoding == 'gzip':
