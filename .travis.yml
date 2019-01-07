@@ -3,15 +3,17 @@ language: python
 matrix:
   include:
   - python: "3.3"
+    env: LXML=3.1.0
   - python: "3.4"
   - python: "3.5"
   - python: "3.6"
   - python: "3.7-dev"
 before_install:
+- lxml="lxml${LXML:+==$LXML}"
 - pyflakes=pyflakes
 - if [[ $TRAVIS_PYTHON_VERSION = 3.3 ]]; then pyflakes='pyflakes<2'; fi
 install:
-- python3 -m pip install --verbose lxml
+- python3 -m pip install --verbose $lxml
 - python3 -m pip install pydiatra $pyflakes
 - python3 -m pip install restructuredtext-lint
 cache: pip
