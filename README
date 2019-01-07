@@ -9,7 +9,7 @@ Prerequisites
 
 * Python ≥ 3.3
 
-* lxml_
+* lxml_ ≥ 3.1
 
 .. _lxml:
    https://pypi.org/project/lxml/
