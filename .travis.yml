@@ -3,7 +3,7 @@ language: python
 jobs:
   include:
   - python: "3.3"
-    env: LXML=3.1.0
+    env: LXML=3.3.0
     dist: trusty
   - python: "3.4"
     env: LXML=4.3.5
