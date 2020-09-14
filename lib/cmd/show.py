@@ -1,4 +1,4 @@
-# Copyright © 2015-2017 Jakub Wilk <jwilk@jwilk.net>
+# Copyright © 2015-2020 Jakub Wilk <jwilk@jwilk.net>
 # SPDX-License-Identifier: MIT
 
 'the “show” command'
