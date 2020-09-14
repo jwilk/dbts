@@ -170,7 +170,7 @@ def run_one(bugno, *, options):
     url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
     data = session.get(url)
     html = lxml.html.fromstring(data)
-    html.make_links_absolute(base_url=url)
+    html.make_links_absolute(base_url=url, handle_failures='ignore')
     debsoap_client = debsoap.Client(session=session)
     status = debsoap_client.get_status(bugno)
     print_header('Subject', '{t.bold}{subject}{t.off}', subject=status.subject)
