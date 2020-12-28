@@ -2,23 +2,19 @@ dist: xenial
 language: python
 jobs:
   include:
-  - python: "3.3"
-    env: LXML=3.3.0
-    dist: trusty
   - python: "3.4"
-    env: LXML=4.3.5
+    env: LXML=3.3.0
   - python: "3.5"
+    env: LXML=4.3.5
   - python: "3.6"
   - python: "3.7"
   - python: "3.8"
   - python: "3.9-dev"
 before_install:
 - lxml="lxml${LXML:+==$LXML}"
-- pyflakes=pyflakes
-- if [[ $TRAVIS_PYTHON_VERSION = 3.3 ]]; then pyflakes='pyflakes<2'; fi
 install:
 - python3 -m pip install --verbose $lxml
-- python3 -m pip install pydiatra $pyflakes
+- python3 -m pip install pydiatra pyflakes
 - python3 -m pip install restructuredtext-lint
 cache: pip
 script:

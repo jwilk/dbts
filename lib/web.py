@@ -5,6 +5,9 @@ import gzip
 import sys
 import urllib.request
 
+if sys.version_info < (3, 4, 3):
+	raise RuntimeError('Python >= 3.4.3 is required')
+
 class UserAgent(object):
 
     default_headers = {
@@ -16,10 +19,7 @@ class UserAgent(object):
         new_headers = dict(self.default_headers)
         new_headers.update(headers)
         request = urllib.request.Request(url, headers=new_headers, data=data)
-        ca_options = {}
-        if sys.version_info < (3, 4, 3):
-            ca_options.update(cadefault=True)
-        with urllib.request.urlopen(request, **ca_options) as fp:
+        with urllib.request.urlopen(request) as fp:
             content_encoding = fp.getheader('Content-Encoding', 'identity')
             data = fp.read()
         if content_encoding == 'gzip':
