@@ -40,6 +40,7 @@ class test_parse_bugspec:
     def test_long_url(self):
         self.t('http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=542953', 542953)
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=288454', 288454)
+        self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=641806;mbox=yes', 641806)
 
     def test_bad_scheme(self):
         self.t('ftp://bugs.debian.org/113533', None)
