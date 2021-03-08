@@ -70,6 +70,7 @@ def extract_attachments(html):
             continue
         url = elem.get('href')
         query = urllib.parse.urlparse(url).query
+        query = query.replace(';', '&')
         query = urllib.parse.parse_qs(query)
         [msg] = query['msg']
         msg = int(msg)

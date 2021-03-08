@@ -46,7 +46,8 @@ def parse_bugspec(s):
         return int(n)
     if url.path != '/cgi-bin/bugreport.cgi':
         raise ValueError
-    query = urllib.parse.parse_qs(url.query)
+    query = url.query.replace(';', '&')
+    query = urllib.parse.parse_qs(query)
     try:
         [n] = query['bug']
     except KeyError:
