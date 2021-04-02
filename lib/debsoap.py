@@ -172,6 +172,7 @@ class Client(object):
 
     def __init__(self, *, session):
         self._session = session
+        self._xml_parser = lxml.etree.XMLParser(resolve_entities=False)
 
     def _call(self, funcname, *args):
         data = _query_template.format(
@@ -193,7 +194,7 @@ class Client(object):
             headers=headers,
             data=data,
         )
-        tree = lxml.etree.fromstring(response)
+        tree = lxml.etree.fromstring(response, parser=self._xml_parser)
         [result] = tree.find('{http://schemas.xmlsoap.org/soap/envelope/}Body')
         return result
 
