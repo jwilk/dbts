@@ -15,7 +15,7 @@ import lxml.etree
 def _get_text(elem):
     tp = elem.get('{http://www.w3.org/1999/XMLSchema-instance}type')
     if tp == 'xsd:base64Binary':
-        return base64.b64decode(elem.text).decode('UTF-8', 'replace')
+        return base64.b64decode(elem.text, validate=True).decode('UTF-8', 'replace')
     else:
         return elem.text
 
