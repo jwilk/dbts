@@ -227,7 +227,12 @@ def run(options):
         cmdline += ['-a']
         cmdline += options.attach
     cmdline += ['--', url]
-    os.execvp(cmdline[0], cmdline)
+    try:
+        os.execvp(cmdline[0], cmdline)
+    except FileNotFoundError as exc:
+        if exc.filename is None:
+            exc.filename = cmdline[0]
+        raise
 
 __all__ = [
     'add_argument_parser',
