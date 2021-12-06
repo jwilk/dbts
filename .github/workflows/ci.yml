@@ -22,7 +22,7 @@ jobs:
           os: ubuntu-20.04
         - python: '3.9'
           os: ubuntu-20.04
-        - python: '3.10-dev'
+        - python: '3.10'
           os: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
