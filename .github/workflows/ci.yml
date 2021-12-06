@@ -8,38 +8,41 @@ jobs:
     strategy:
       matrix:
         include:
-        - python-version: '3.4'
+        - python: '3.4'
           os: ubuntu-18.04
-          lxml-version: '4.3.0'
-        - python-version: '3.5'
+          lxml: lxml-4.3.0
+        - python: '3.5'
           os: ubuntu-18.04
-          lxml-version: '4.3.5'
-        python-version:
-        - '3.6'
-        - '3.7'
-        - '3.8'
-        - '3.9'
-        - '3.10-dev'
-        os: [ubuntu-20.04]
+          lxml: lxml-4.3.5
+        - python: '3.6'
+          os: ubuntu-20.04
+        - python: '3.7'
+          os: ubuntu-20.04
+        - python: '3.8'
+          os: ubuntu-20.04
+        - python: '3.9'
+          os: ubuntu-20.04
+        - python: '3.10-dev'
+          os: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: set up Python ${{matrix.python-version}}
+    - name: set up Python ${{matrix.python}}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{matrix.python-version}}
+        python-version: ${{matrix.python}}
     - name: set up pip cache
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: pip-${{matrix.os}}-python${{matrix.python-version}}
+        key: pip-${{matrix.os}}-python${{matrix.python}}
     - name: install wheel
       run:
         python3 -m pip install wheel
     - name: install lxml
+      env:
+        lxml: ${{matrix.lxml || 'lxml'}}
       run: |
-        v=${{matrix.lxml-version}}
-        lxml=lxml${v:+==$v}
-        python3 -m pip install $lxml
+        python3 -m pip install ${lxml/-/==}
     - name: run unit tests
       run: |
         # work-around for <https://github.com/nose-devs/nose/issues/1115>:
