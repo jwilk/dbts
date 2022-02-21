@@ -102,7 +102,7 @@ def run(options):
         try:
             bugs += [deblogic.parse_bugspec(bugspec)]
         except ValueError:
-            options.error('{0!r} is not a valid bug number'.format(bugspec))
+            options.error(f'{bugspec!r} is not a valid bug number')
     for bugno in bugs:
         run_one(bugno, options=options)
 
@@ -168,7 +168,7 @@ def print_message(message, attachments=()):
 def run_one(bugno, *, options):
     print_header('Location', '{t.cyan}{t.bold}https://bugs.debian.org/{N}{t.off}', N=bugno)
     session = options.session
-    url = 'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={0}'.format(bugno)
+    url = f'https://bugs.debian.org/cgi-bin/bugreport.cgi?bug={bugno}'
     data = session.get(url)
     html = lxml.html.fromstring(data)
     html.make_links_absolute(base_url=url, handle_failures='ignore')

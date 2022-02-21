@@ -144,7 +144,7 @@ def run(options):
         try:
             os.stat(path)
         except OSError:
-            options.error('{0!r} is not a package'.format(path))
+            options.error(f'{path!r} is not a package')
         if os.path.isdir(path + '/debian'):
             (source, version) = pkginfo_for_unpacked(path)
         elif path.endswith('.dsc'):
@@ -152,7 +152,7 @@ def run(options):
         elif path.endswith('.deb'):
             (package, version, architecture) = pkginfo_for_deb(path)
         else:
-            options.error('{0!r} is not a package'.format(path))
+            options.error(f'{path!r} is not a package')
     elif package.startswith(('src:', 'source:')):
         (prefix, source) = package.split(':', 1)
         package = None
@@ -168,7 +168,7 @@ def run(options):
             info = info.decode('ASCII')
             info = info.splitlines()
             if len(info) != 1:
-                options.error('ambiguous package name: {0!r}'.format(package))
+                options.error(f'ambiguous package name: {package!r}')
             [package, architecture, version, *dep_lists] = info[0].split('\x1F')
             if version:
                 dep_lists = [list(flatten_depends(d)) for d in dep_lists]
@@ -181,20 +181,20 @@ def run(options):
     def a(s=''):
         body.append(s)
     if package:
-        a('Package: {pkg}'.format(pkg=package))
+        a(f'Package: {package}')
     if source:
-        a('Source: {src}'.format(src=source))
+        a(f'Source: {source}')
     if version:
-        a('Version: {ver}'.format(ver=version))
+        a(f'Version: {version}')
     if options.severity is not None:
-        a('Severity: {sev}'.format(sev=options.severity))
+        a(f'Severity: {options.severity}')
     a()
     a()
     if installed or architecture:
         a('-- System Information:')
         if installed and architecture == 'all':
             architecture = dpkg_get_architecture()
-        a('Architecture: {arch}'.format(arch=architecture))
+        a(f'Architecture: {architecture}')
         a()
     if installed:
         seen = set()
@@ -212,11 +212,11 @@ def run(options):
                     deptable.add(status, dep, version)
                     seen.add(dep)
             if deptable:
-                a('Versions of packages {pkg} {verb}:'.format(pkg=package, verb=dverb))
+                a(f'Versions of packages {package} {dverb}:')
                 a(str(deptable))
                 a()
     body = '\n'.join(body)
-    subject = '{pkg}:'.format(pkg=(package or source))
+    subject = f'{(package or source)}:'
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
     cmdline = ['neomutt',
         '-e', 'my_hdr X-Debbugs-No-Ack: please',

@@ -23,7 +23,7 @@ class UserAgent(object):
         elif content_encoding == 'identity':
             return data
         else:
-            raise RuntimeError('unexpected Content-Encoding: {0!r}'.format(content_encoding))
+            raise RuntimeError(f'unexpected Content-Encoding: {content_encoding!r}')
 
     def get(self, url, headers=()):
         return self.request(url, headers=headers, method='GET')

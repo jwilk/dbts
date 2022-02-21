@@ -63,7 +63,7 @@ selectors = {  # sort -t: -k2
 }
 
 def strip_package_prefix(subject, package):
-    regex = r'\A{pkg}(?:[:]\s*|\s+)'.format(pkg=re.escape(package))
+    regex = fr'\A{re.escape(package)}(?:[:]\s*|\s+)'
     return re.sub(regex, '', subject)
 
 def run(options):
@@ -83,7 +83,7 @@ def run(options):
             try:
                 os.stat(path)
             except OSError:
-                options.error('{0!r} is not a package'.format(path))
+                options.error(f'{path!r} is not a package')
             if os.path.isdir(path + '/debian'):
                 queries += select_for_unpacked(path)
             elif path.endswith('.dsc'):
@@ -91,13 +91,13 @@ def run(options):
             elif path.endswith('.deb'):
                 queries += select_for_deb(path)
             else:
-                options.error('{0!r} is not a package'.format(path))
+                options.error(f'{path!r} is not a package')
         elif ':' in selection:
             selector, value = selection.split(':', 1)
             try:
                 selector = selectors[selector]
             except KeyError:
-                options.error('{0!r} is not a valid selector'.format(selector))
+                options.error(f'{selector!r} is not a valid selector')
             if callable(selector):
                 queries += selector(value)
             else:
@@ -105,7 +105,7 @@ def run(options):
         elif deblogic.is_package_name(selection):
             queries += [dict(package=selection)]
         else:
-            options.error('{0!r} is not a valid package name'.format(selection))
+            options.error(f'{selection!r} is not a valid package name')
     bugs = debsoap_client.get_bugs(*queries)
     bugs = sorted(bugs, key=(lambda bug: -bug.id))
     for bug in bugs:

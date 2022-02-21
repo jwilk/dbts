@@ -19,10 +19,8 @@ class Node(object):
         self._attrs = attrs
 
     def __repr__(self):
-        return '{tp}({name!r}, ...)'.format(
-            tp=type(self).__name__,
-            name=self.name,
-        )
+        tp = type(self).__name__
+        return f'{tp}({self.name!r}, ...)'
 
     def __str__(self):
         return self._attrs.get('label', self.name)
@@ -72,11 +70,9 @@ class Graph(object):
         return len(self.edges) > 0
 
     def __repr__(self):
-        return '{tp}({nodes!r}, {edges!r})'.format(
-            tp=type(self).__name__,
-            nodes=list(self.nodes.values()),
-            edges=self.edges,
-        )
+        tp = type(self).__name__
+        nodes = list(self.nodes.values())
+        return f'{tp}({nodes!r}, {self.edges!r})'
 
 def parse(dot_data):
     match = re.match(r'\Adigraph\s*\w+\s*{\s*(.*)}\s*\Z', dot_data, flags=re.DOTALL)
