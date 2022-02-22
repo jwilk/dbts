@@ -72,7 +72,11 @@ class Graph(object):
     def __repr__(self):
         tp = type(self).__name__
         nodes = list(self.nodes.values())
-        return f'{tp}({nodes!r}, {self.edges!r})'
+        edges = []
+        for x, ys in self.edges.items():
+            for y in ys:
+                edges += [(x, y)]
+        return f'{tp}({nodes!r}, {edges!r})'
 
 def parse(dot_data):
     match = re.match(r'\Adigraph\s*\w+\s*{\s*(.*)}\s*\Z', dot_data, flags=re.DOTALL)
