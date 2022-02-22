@@ -8,14 +8,9 @@ jobs:
     strategy:
       matrix:
         include:
-        - python: '3.4'
-          os: ubuntu-18.04
-          lxml: lxml-4.3.0
-        - python: '3.5'
-          os: ubuntu-18.04
-          lxml: lxml-4.3.5
         - python: '3.6'
-          os: ubuntu-20.04
+          os: ubuntu-18.04
+          lxml: lxml-3.8.0
         - python: '3.7'
           os: ubuntu-20.04
         - python: '3.8'

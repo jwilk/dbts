@@ -1,1 +1,1 @@
-lambda: (yield from [])  # Python >= 3.3 is required
+0_0  # Python >= 3.6 is required

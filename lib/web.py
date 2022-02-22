@@ -2,11 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import gzip
-import sys
 import urllib.request
-
-if sys.version_info < (3, 4, 3):
-    raise RuntimeError('Python >= 3.4.3 is required')
 
 class UserAgent(object):
 
