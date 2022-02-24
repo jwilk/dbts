@@ -31,7 +31,7 @@ def test_control_characters():
     t('\x06', '^F')
     t('\x07', '^G')
     t('\x08', '^H')
-    t('\x09', '\t')
+    t('\x09', '^I')
     t('\x0A', '^J')
     t('\x0B', '^K')
     t('\x0C', '^L')

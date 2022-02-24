@@ -32,9 +32,7 @@ def print(_s='', **kwargs):
     builtins.print(format(_s, **kwargs))
 
 def _quote_unsafe_char(ch):
-    if ch == '\t':
-        s = ch
-    elif ch < ' ' or ch == '\x7F':
+    if ch < ' ' or ch == '\x7F':
         s = '^' + chr(ord('@') ^ ord(ch))
     else:
         u = ord(ch)
