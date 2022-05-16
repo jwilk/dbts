@@ -63,8 +63,8 @@ selectors = {  # sort -t: -k2
 }
 
 def strip_package_prefix(subject, package):
-    regex = fr'\A{re.escape(package)}(?:[:]\s*|\s+)'
-    return re.sub(regex, '', subject)
+    regexp = fr'\A{re.escape(package)}(?:[:]\s*|\s+)'
+    return re.sub(regexp, '', subject)
 
 def run(options):
     utils.reset_SIGPIPE()
