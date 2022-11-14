@@ -9,9 +9,10 @@ import argparse
 import importlib
 
 from lib import pager
+from lib import utils
 from lib import web
 
-def main():
+def xmain():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers()
     sp.dest = 'cmd'  # https://bugs.python.org/issue9253
@@ -25,6 +26,13 @@ def main():
     options.error = ap.error
     with pager.autopager():
         mod.run(options)
+
+def main():
+    try:
+        xmain()
+    except BrokenPipeError:
+        utils.raise_SIGPIPE()
+        raise
 
 __all__ = [
     'main',

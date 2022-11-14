@@ -67,7 +67,6 @@ def strip_package_prefix(subject, package):
     return re.sub(regexp, '', subject)
 
 def run(options):
-    utils.reset_SIGPIPE()
     debsoap_client = debsoap.Client(session=options.session)
     queries = []
     for selection in options.selections:

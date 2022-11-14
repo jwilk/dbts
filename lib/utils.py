@@ -5,6 +5,7 @@
 various utilities
 '''
 
+import os
 import subprocess
 import signal
 
@@ -14,14 +15,16 @@ def looks_like_path(s):
         s.startswith(('./', '../', '/'))
     )
 
-def reset_SIGPIPE():
+def raise_SIGPIPE():
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    os.kill(os.getpid(), signal.SIGPIPE)
 
 def xcmd(*cmdline):
     return subprocess.check_output(cmdline)
 
 __all__ = [
     'looks_like_path',
+    'raise_SIGPIPE',
     'xcmd',
 ]
 

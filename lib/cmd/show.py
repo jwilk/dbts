@@ -17,7 +17,6 @@ from lib import deblogic
 from lib import debsoap
 from lib import dotparser
 from lib import indent
-from lib import utils
 
 def print_version_graph(graph, *, ilevel=0):
     vcolors = dict(
@@ -96,7 +95,6 @@ def add_argument_parser(subparsers):
     return ap
 
 def run(options):
-    utils.reset_SIGPIPE()
     bugs = []
     for bugspec in options.bugs:
         try:
