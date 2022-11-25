@@ -175,15 +175,17 @@ class Client(object):
         self._xml_parser = lxml.etree.XMLParser(resolve_entities=False)
 
     def _call(self, funcname, *args):
+        args = (
+            '<v xsi:type="{tp}">{v}</v>'.format(
+                v=saxutils.escape(str(value)),
+                tp=self._xsd_types[type(value)],
+            )
+            for value in args
+        )
+        args = str.join('', args)
         data = _query_template.format(
             func=funcname,
-            args=''.join(
-                '<v xsi:type="{tp}">{v}</v>'.format(
-                    v=saxutils.escape(str(value)),
-                    tp=self._xsd_types[type(value)],
-                )
-                for value in args
-            )
+            args=args,
         )
         data = data.encode('UTF-8')
         headers = {

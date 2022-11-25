@@ -31,10 +31,11 @@ def print_version_graph(graph, *, ilevel=0):
         fmt1 = fmt2 = '{line}'
         if color is not None:
             fmt1 = color + fmt1 + '{t.off}'
-        label = '\n'.join(
+        label = (
             colorterm.format(fmt1 if i == 0 else fmt2, line=line)
             for i, line in enumerate(label.splitlines())
         )
+        label = str.join('\n', label)
         return label
     bullet = '∙'
     try:
@@ -111,11 +112,11 @@ def print_header(_h, _s=None, **kwargs):
     colorterm.print(template, **kwargs)
 
 def normalize_space(s):
-    return ' '.join(s.split())
+    return str.join(' ', s.split())
 
 def print_control_message(html_message):
     message = normalize_space(
-        ''.join(html_message.xpath('.//text()'))
+        str.join('', html_message.xpath('.//text()'))
     )
     match = re.match(
         r'^(.*) '
@@ -177,17 +178,18 @@ def run_one(bugno, *, options):
         print_header('Source', '{t.bold}{pkg}{t.off}', pkg=status.package[4:])
     else:
         packages = status.package.split(',')
-        template = ', '.join(
+        template = (
             '{t.bold}{pkgs[N]}{t.off}'.replace('N', str(i))
             for i, _ in enumerate(packages)
         )
+        template = str.join(', ', template)
         print_header('Package', template, pkgs=packages)
         if status.source is not None:
             print_header('Source', '{pkg}', pkg=status.source)
     # TODO: use SOAP to extract Maintainer
     # https://bugs.debian.org/553661
     print_header('Maintainer', '{maint}',
-        maint=', '.join(extract_maintainers(html))
+        maint=str.join(', ', extract_maintainers(html))
     )
     if status.affects:
         print_header('Affects')
@@ -209,7 +211,7 @@ def run_one(bugno, *, options):
     )
     version_graph = extract_bug_version_graph(html, options=options)
     if status.tags:
-        print_header('Tags', '{tags}', tags=' '.join(status.tags))
+        print_header('Tags', '{tags}', tags=str.join(' ', status.tags))
     if status.merged_with:
         print_header('Merged-with')
         for mbug in status.merged_with:

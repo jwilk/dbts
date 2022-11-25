@@ -59,13 +59,14 @@ class Table(object):
                 widths[i] = max(widths[i], len(s))
         lines = []
         for item in self._items:
-            line = '  '.join(
+            line = (
                 s.ljust(widths[i])
                 for i, s in enumerate(item)
             )
+            line = str.join('  ', line)
             line = line.rstrip()
             lines += [line]
-        return '\n'.join(lines)
+        return str.join('\n', lines)
 
 def urlencode(**data):
     return urllib.parse.urlencode(data, quote_via=urllib.parse.quote)
@@ -215,7 +216,7 @@ def run(options):
                 a(f'Versions of packages {package} {dverb}:')
                 a(str(deptable))
                 a()
-    body = '\n'.join(body)
+    body = str.join('\n', body)
     subject = f'{(package or source)}:'
     url = 'mailto:submit@bugs.debian.org?' + urlencode(subject=subject, body=body)
     cmdline = ['neomutt',

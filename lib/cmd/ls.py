@@ -176,7 +176,7 @@ def run(options):
         if template:
             template = indent + template
             colorterm.print(template,
-                tags=' '.join('+' + t for t in bug.tags),
+                tags=str.join(' ', ('+' + t for t in bug.tags)),
                 severity=bug.severity,
             )
         template = ''
@@ -189,8 +189,8 @@ def run(options):
         if template:
             template = indent + template
             colorterm.print(template,
-                found=', '.join(bug.found_versions),
-                fixed=', '.join(bug.fixed_versions),
+                found=str.join(', ', bug.found_versions),
+                fixed=str.join(', ', bug.fixed_versions),
             )
         print()
 
