@@ -133,6 +133,19 @@ def dpkg_get_architecture():
     info = info.decode('ASCII')
     return info.rstrip()
 
+def dpkg_search(path):
+    path = os.path.realpath(path)
+    info = utils.xcmd('dpkg-query', '-S', path)
+    info = info.decode('UTF-8')
+    info = info.splitlines()
+    if len(info) > 1:
+        raise RuntimeError('could not parse dpkg -S output: multiple lines')
+    [line] = info
+    pkg, dpath = line.split(':', 1)
+    if ',' in pkg:
+        raise RuntimeError('could not parse dpkg -S output: multiple packages')
+    return pkg
+
 def run(options):
     package = options.package
     source = None
@@ -161,6 +174,10 @@ def run(options):
         (source, suffix) = package.rsplit(':', 1)
         package = None
     else:
+        if package.startswith('file:'):
+            tmp, path = package.split(':', 1)
+            del tmp
+            package = dpkg_search(path)
         try:
             info = utils.xcmd('dpkg-query', '-Wf', '${Package}\x1F${Architecture}\x1F${Version}\x1F${Pre-Depends}\x1F${Depends}\x1F${Recommends}\x1F${Suggests}\n', package)
         except subprocess.CalledProcessError:
