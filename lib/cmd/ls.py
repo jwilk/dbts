@@ -17,16 +17,22 @@ def add_argument_parser(subparsers):
     ap.add_argument('selections', metavar='SELECTION', type=str, nargs='+')
     return ap
 
+class SourcePackageLookupError(RuntimeError):
+    pass
+
 def select_sources_for(pkgname):
     @functools.lru_cache(maxsize=None)
     def get_cache():
         import apt
         return apt.Cache()
     cache = get_cache()
-    return [
-        {'src': pkg.source_name}
-        for pkg in cache[pkgname].versions
-    ]
+    try:
+        return [
+            {'src': pkg.source_name}
+            for pkg in cache[pkgname].versions
+        ]
+    except KeyError:
+        raise SourcePackageLookupError(pkgname)
 
 def select_for_dsc(path):
     import debian.deb822 as deb822
@@ -97,10 +103,13 @@ def run(options):
                 selector = selectors[selector]
             except KeyError:
                 options.error(f'{selector!r} is not a valid selector')
-            if callable(selector):
-                queries += selector(value)
-            else:
-                queries += [{selector: value}]
+            try:
+                if callable(selector):
+                    queries += selector(value)
+                else:
+                    queries += [{selector: value}]
+            except SourcePackageLookupError as exc:
+                options.error(f'no such source package: {exc}')
         elif deblogic.is_package_name(selection):
             queries += [dict(package=selection)]
         else:
