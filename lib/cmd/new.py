@@ -256,7 +256,6 @@ def run(options):
         '-e', 'my_hdr X-Debbugs-Cc: $from',
     ]
     if options.attach:
-        print(repr(options.attach))
         cmdline += ['-a']
         cmdline += options.attach
     cmdline += ['--', url]
