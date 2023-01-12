@@ -174,12 +174,17 @@ def run(options):
         (source, suffix) = package.rsplit(':', 1)
         package = None
     else:
+        look_for_source = False
+        if package.startswith(('srcfor:', 'sourcefor:')):
+            look_for_source = True
+            tmp, package = package.split(':', 1)
+            del tmp
         if package.startswith('file:'):
             tmp, path = package.split(':', 1)
             del tmp
             package = dpkg_search(path)
         try:
-            info = utils.xcmd('dpkg-query', '-Wf', '${Package}\x1F${Architecture}\x1F${Version}\x1F${Pre-Depends}\x1F${Depends}\x1F${Recommends}\x1F${Suggests}\n', package)
+            info = utils.xcmd('dpkg-query', '-Wf', '${Package}\x1F${Source}\x1F${Architecture}\x1F${Version}\x1F${Pre-Depends}\x1F${Depends}\x1F${Recommends}\x1F${Suggests}\n', package)
         except subprocess.CalledProcessError:
             pass
         else:
@@ -187,8 +192,18 @@ def run(options):
             info = info.splitlines()
             if len(info) != 1:
                 options.error(f'ambiguous package name: {package!r}')
-            [package, architecture, version, *dep_lists] = info[0].split('\x1F')
-            if version:
+            [package, source, architecture, version, *dep_lists] = info[0].split('\x1F')
+            if not look_for_source:
+                source = None
+            if look_for_source:
+                source = source or package
+                if ' ' in source:
+                    source, version = source.split(' ', 1)
+                    version = version.strip('()')
+                package = None
+                architecture = None
+                del dep_lists
+            elif version:
                 dep_lists = [list(flatten_depends(d)) for d in dep_lists]
                 dep_lists[0][:0] = dep_lists.pop(0)  # merge Depends + Pre-Depends
                 dverbs = ['depends on', 'recommends', 'suggests']
