@@ -20,7 +20,9 @@ def raise_SIGPIPE():
     os.kill(os.getpid(), signal.SIGPIPE)
 
 def xcmd(*cmdline):
-    return subprocess.check_output(cmdline)
+    def reset_locale():
+        os.environ['LC_ALL'] = 'C'
+    return subprocess.check_output(cmdline, preexec_fn=reset_locale)
 
 __all__ = [
     'looks_like_path',
