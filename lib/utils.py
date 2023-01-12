@@ -22,7 +22,13 @@ def raise_SIGPIPE():
 def xcmd(*cmdline):
     def reset_locale():
         os.environ['LC_ALL'] = 'C'
-    return subprocess.check_output(cmdline, preexec_fn=reset_locale)
+    proc = subprocess.run(
+        cmdline,
+        stdout=subprocess.PIPE,
+        preexec_fn=reset_locale,
+        check=True,
+    )
+    return proc.stdout
 
 __all__ = [
     'looks_like_path',
