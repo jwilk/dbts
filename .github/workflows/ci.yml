@@ -9,7 +9,7 @@ jobs:
       matrix:
         include:
         - python: '3.6'
-          os: ubuntu-18.04
+          os: ubuntu-20.04
           lxml: lxml-3.8.0
         - python: '3.7'
           os: ubuntu-20.04
