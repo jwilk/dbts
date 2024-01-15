@@ -1,7 +1,8 @@
 # Copyright © 2015-2021 Jakub Wilk <jwilk@jwilk.net>
 # SPDX-License-Identifier: MIT
 
-from nose.tools import (
+from tests.tools import (
+    TestCase,
     assert_equal,
     assert_false,
     assert_is_instance,
@@ -11,7 +12,7 @@ from nose.tools import (
 
 from lib import deblogic as M
 
-class test_parse_bugspec:
+class test_parse_bugspec(TestCase):
 
     def t(self, s, expected):
         if expected is None:
@@ -59,7 +60,7 @@ class test_parse_bugspec:
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1.8943', None)
         self.t('https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=293727;bug=161662', None)
 
-class test_is_package_name:
+class test_is_package_name(TestCase):
 
     def t(self, s):
         ok = M.is_package_name(s)

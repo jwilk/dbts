@@ -4,8 +4,9 @@
 import io
 import unittest.mock
 
-from nose.tools import (
+from tests.tools import (
     assert_equal,
+    testcase,
 )
 
 from lib import colorterm as M
@@ -17,6 +18,7 @@ def with_stdout(encoding):
     )
     return unittest.mock.patch('sys.stdout', stdout)
 
+@testcase
 @with_stdout('UTF-8')
 def test_control_characters():
     def t(s, x):
@@ -88,6 +90,7 @@ def test_control_characters():
     t('\x9E', '<U+009E>')
     t('\x9F', '<U+009F>')
 
+@testcase
 @with_stdout('US-ASCII')
 def test_escape_encoding_error():
     def t(s, x=None):
@@ -99,6 +102,7 @@ def test_escape_encoding_error():
     t('A')
     t('Á', '<U+00C1>')
 
+@testcase
 @with_stdout('UTF-8')
 def test_escape_safe():
     def t(s):
@@ -106,5 +110,7 @@ def test_escape_safe():
         assert_equal(r, s)
     t('A')
     t('Á')
+
+del testcase
 
 # vim:ts=4 sts=4 sw=4 et
