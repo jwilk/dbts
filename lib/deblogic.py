@@ -19,7 +19,8 @@ severities = (
     'minor',
     'normal',
     'important',
-) + rc_severities
+    *rc_severities
+)
 
 wnpp_tags = {
     'O',
