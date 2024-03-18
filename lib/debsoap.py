@@ -19,7 +19,7 @@ def _get_text(elem):
     else:
         return elem.text
 
-class BugStatus(object):
+class BugStatus:
 
     def __init__(self, xml):
         self._xml = xml
@@ -109,7 +109,7 @@ class BugStatus(object):
         s = self._xml.find('.//{Debbugs/SOAP}' + name).text or ''
         return [int(x) for x in s.split()]
 
-class BugLog(object):
+class BugLog:
 
     def __init__(self, xml):
         self._messages = {}
@@ -125,7 +125,7 @@ class BugLog(object):
     def __getitem__(self, n):
         return self._messages[n]
 
-class BugMessage(object):
+class BugMessage:
 
     def __init__(self, xml):
         self._xml = xml
@@ -163,7 +163,7 @@ _query_template = '''\
 </soap:Envelope>
 '''
 
-class Client(object):
+class Client:
 
     _xsd_types = {
         int: 'xsd:int',

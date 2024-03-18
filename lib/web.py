@@ -4,7 +4,7 @@
 import gzip
 import urllib.request
 
-class UserAgent(object):
+class UserAgent:
 
     default_headers = {
         'User-Agent': 'dbts (https://github.com/jwilk/dbts)',

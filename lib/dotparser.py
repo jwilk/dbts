@@ -12,7 +12,7 @@ import sys
 
 from lib import indent
 
-class Node(object):
+class Node:
 
     def __init__(self, name, **attrs):
         self.name = name
@@ -28,7 +28,7 @@ class Node(object):
     def get(self, attr):
         return self._attrs.get(attr)
 
-class Graph(object):
+class Graph:
 
     def __init__(self, nodes, edges):
         self.nodes = {

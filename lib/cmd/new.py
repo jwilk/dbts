@@ -41,7 +41,7 @@ def get_version_info(packages):
         info[package] = (status, version)
     return info
 
-class Table(object):
+class Table:
 
     def __init__(self):
         self._items = []
