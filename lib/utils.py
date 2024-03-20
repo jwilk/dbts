@@ -6,8 +6,8 @@ various utilities
 '''
 
 import os
-import subprocess
 import signal
+import subprocess
 
 def looks_like_path(s):
     return (
