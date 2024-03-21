@@ -14,7 +14,7 @@ class UserAgent:
     def request(self, url, data=None, headers=(), method=None):
         new_headers = dict(self.default_headers)
         new_headers.update(headers)
-        request = urllib.request.Request(url, headers=new_headers, data=data)
+        request = urllib.request.Request(url, headers=new_headers, data=data, method=method)
         with urllib.request.urlopen(request) as fp:
             content_encoding = fp.getheader('Content-Encoding', 'identity')
             data = fp.read()
