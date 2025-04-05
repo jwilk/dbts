@@ -201,7 +201,7 @@ def run_one(bugno, *, options):
         pass
     else:
         print_header('Submitter', '{user}', user=status.submitter)
-    print_header('Date', '{date}-00:00', date=status.date)
+    print_header('Date', '{date}', date=status.date)
     severity_color = (
         '{t.bold}{t.red}' if status.severity in deblogic.rc_severities
         else ''

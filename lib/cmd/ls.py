@@ -163,7 +163,7 @@ def run(options):
         if bug.forwarded:
             template += ' -> {t.cyan}{forwarded}{t.off}'
         colorterm.print(template, n=bug.id, forwarded=bug.forwarded)
-        template = indent + '{user}; {date}-00:00'
+        template = indent + '{user}; {date}'
         user = bug.submitter
         if package == 'wnpp' and bug.owner is not None:
             user = bug.owner

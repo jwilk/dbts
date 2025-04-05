@@ -19,6 +19,14 @@ def _get_text(elem):
     else:
         return elem.text
 
+class DateTime(datetime.datetime):
+
+    def __str__(self):
+        s = super().__str__()
+        if s.endswith('+00:00'):
+            s = s[:-6] + '-00:00'
+        return s
+
 class BugStatus:
 
     def __init__(self, xml):
@@ -55,7 +63,7 @@ class BugStatus:
     @property
     def date(self):
         ts = int(self._get('date'))
-        return datetime.datetime.utcfromtimestamp(ts)
+        return DateTime.fromtimestamp(ts, datetime.timezone.utc)
 
     @property
     def severity(self):
