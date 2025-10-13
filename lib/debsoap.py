@@ -24,7 +24,7 @@ class DateTime(datetime.datetime):
     def __str__(self):
         s = super().__str__()
         if s.endswith('+00:00'):
-            s = s[:-6] + '-00:00'
+            s = s[:-6] + 'Z'
         return s
 
 class BugStatus:
