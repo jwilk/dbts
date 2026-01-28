@@ -171,6 +171,8 @@ _query_template = '''\
 </soap:Envelope>
 '''
 
+debbugs_host = 'bugs.debian.org'
+
 class Client:
 
     _xsd_types = {
@@ -200,7 +202,7 @@ class Client:
             'Content-Type': 'application/soap+xml; charset=UTF-8',
             'Content-Length': str(len(data)),
         }
-        response = self._session.post(url='https://bugs.debian.org/cgi-bin/soap.cgi',
+        response = self._session.post(url=f'https://{debbugs_host}/cgi-bin/soap.cgi',
             headers=headers,
             data=data,
         )
