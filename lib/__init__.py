@@ -1,1 +1,2 @@
-0_0  # Python >= 3.6 is required
+async def _(): f'{await "# Python >= 3.7 is required #"}'
+del _

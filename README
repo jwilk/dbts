@@ -7,7 +7,7 @@ Overview
 Prerequisites
 =============
 
-* Python ≥ 3.6
+* Python ≥ 3.7
 
 * lxml_ ≥ 3.3
 
