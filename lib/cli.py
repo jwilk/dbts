@@ -15,9 +15,7 @@ from lib import web
 def xmain():
     ap = argparse.ArgumentParser()
     ap.color = False
-    sp = ap.add_subparsers()
-    sp.dest = 'cmd'  # https://bugs.python.org/issue9253
-    sp.required = True
+    sp = ap.add_subparsers(required=True, dest='cmd')
     for cmd in ['ls', 'show', 'new']:
         mod = importlib.import_module(f'lib.cmd.{cmd}')
         mod.add_argument_parser(sp)
